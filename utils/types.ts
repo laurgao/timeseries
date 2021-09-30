@@ -5,6 +5,12 @@ export interface UserObj {
     image: string,
 }
 
+export interface NoteObj {
+    user: string; 
+    body: string; 
+    date: string; 
+}
+
 export interface SessionObj {
     user: {
         name: string,

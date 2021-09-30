@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import {useState} from "react";
 import SEO from "../../components/SEO";
 import Skeleton from "react-loading-skeleton";
-import SpinnerButton from "../../components/SpinnerButton";
+import Button from "../../components/headless/Button";
 import {UserModel} from "../../models/User";
 import dbConnect from "../../utils/dbConnect";
 
@@ -73,13 +73,13 @@ export default function NewAccount({}: {}) {
             {error && (
                 <p className="text-red-500">{error}</p>
             )}
-            <SpinnerButton
+            <Button
                 isLoading={isLoading}
                 onClick={onSubmit}
                 disabled={loading || username !== encodeURIComponent(username) || username.length === 0}
             >
                 Let's get started!
-            </SpinnerButton>
+            </Button>
         </>
     );
 }

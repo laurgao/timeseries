@@ -8,7 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         case "POST":
             const session = await getSession({req});
             if (!session) return res.status(403).send("Unauthed");
-            if (session.userId) return res.status(200).json({message: "Account already exists"});
+            const user = await UserModel.findOne({email: session.user.email})
+            if (user) return res.status(200).json({message: "Account already exists"});
 
             if (!(req.body.username)) {
                 return res.status(400).send("Missing username");
@@ -24,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     username: req.body.username,
                 });
 
-                return res.status(200).json({message: "Object created"});
+                return res.status(200).json({message: "Account created 😜"});
             } catch (e) {
                 return res.status(500).json({message: e});
             }
