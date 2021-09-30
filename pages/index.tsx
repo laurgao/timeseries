@@ -59,18 +59,6 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
             waitForEl("new-note-body");
         }
     })
-    useKey("Enter", (e) => {
-        if (addNoteIsOpen) {
-            e.preventDefault();
-            onSubmit();
-        }
-    })
-    useKey("Escape", (e) => {
-        if (addNoteIsOpen) {
-            e.preventDefault();
-            setAddNoteIsOpen(false);
-        }
-    })
 
     return (
         <>
@@ -83,11 +71,21 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
             }
             {addNoteIsOpen && 
                 <div className="mb-16">
-                    <Input type="date" value={date} setValue={setDate}/>
-                    <Input 
-                        type="textarea" value={body} setValue={setBody} id="new-note-body"
-                        placeholder="What were the most interesting events in today's news?"
-                    />
+                    <Input type="date" value={date} setValue={setDate} className="my-8"/>
+                    <div className="my-8">
+                        <Input 
+                            type="textarea" value={body} setValue={setBody} id="new-note-body"
+                            placeholder="What were the most interesting events in today's news?"
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    if (e.ctrlKey) onSubmit();
+                                } else if (e.key === "Escape") {
+                                    setAddNoteIsOpen(false);
+                                }
+                            }}
+                        />
+                        <p className="text-gray-400 text-sm">Ctrl+Enter to save</p>
+                    </div>
                     <Button onClick={onSubmit} disabled={!body || !date} isLoading={isLoading}>Add note</Button>
                 </div>
             }
