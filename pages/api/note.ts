@@ -1,9 +1,8 @@
-import {NoteObj} from "../../utils/types";
-import {NoteModel} from "../../models/Note";
-import dbConnect from "../../utils/dbConnect";
-import {NextApiRequest, NextApiResponse} from "next";
-import {getSession} from "next-auth/client";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/client";
+import { NoteModel } from "../../models/Note";
 import { UserModel } from "../../models/User";
+import dbConnect from "../../utils/dbConnect";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -27,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     {$sort: {"date": -1}},
                 ]);
                 
-                if (!thisObject || !thisObject.length) return res.status(404);
+                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {
