@@ -7,12 +7,12 @@ import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { FiTrash } from "react-icons/fi";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
-import Button from "../components/headless/Button";
 import Container from "../components/headless/Container";
 import H1 from "../components/headless/H1";
 import H2 from "../components/headless/H2";
 import Input from "../components/headless/Input";
 import NotionButton from "../components/headless/NotionButton";
+import PrimaryButton from "../components/headless/PrimaryButton";
 import SEO from "../components/SEO";
 import { UserModel } from "../models/User";
 import cleanForJSON from "../utils/cleanForJSON";
@@ -67,7 +67,10 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
             <>
             <H1 className="mb-8 text-center">Timeseries</H1>
             {props.user && props.user.email === "gaolauro@gmail.com" && !addNoteIsOpen &&
-                <div className="my-4"><NotionButton onClick={() => setAddNoteIsOpen(true)}>New note (n)</NotionButton></div>
+                <div className="my-4"><NotionButton onClick={() => {
+                    setAddNoteIsOpen(true);
+                    waitForEl("new-note-body");
+                }}>New note (n)</NotionButton></div>
             }
             {addNoteIsOpen && 
                 <div className="mb-16">
@@ -84,9 +87,9 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
                                 }
                             }}
                         />
-                        <p className="text-gray-400 text-sm">Ctrl+Enter to save</p>
+                        <p className="text-gray-400 text-sm">Ctrl+Enter to add note</p>
                     </div>
-                    <Button onClick={onSubmit} disabled={!body || !date} isLoading={isLoading}>Add note</Button>
+                    <PrimaryButton onClick={onSubmit} disabled={!body || !date} isLoading={isLoading}>Add note</PrimaryButton>
                 </div>
             }
             {(notesData && notesData.data) ? notesData.data.length > 0 ? notesData.data.map(note => 
@@ -94,12 +97,12 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
                     <ContextMenuTrigger id={note._id}>
                         <H2 className="text-center mb-4">{note.date}</H2>
                     </ContextMenuTrigger>
-                    <ContextMenu id={note._id} className="bg-white rounded-md shadow-lg z-10 cursor-pointer">
+                   {props.user && props.user.email === "gaolauro@gmail.com" && <ContextMenu id={note._id} className="bg-white rounded-md shadow-lg z-10 cursor-pointer">
                         <MenuItem onClick={() => {onDelete(note._id)}} className="flex hover:bg-gray-50 p-4">
                             <FiTrash /><span className="ml-2 -mt-0.5">Delete</span>
                         </MenuItem>
-                    </ContextMenu>
-                    <p>{note.body}</p>
+                    </ContextMenu>}
+                    <pre>{note.body}</pre>
                 </div>    
             ) : <p>No notes.</p> : <Skeleton count={2} />}
             </>

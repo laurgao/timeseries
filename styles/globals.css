@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+}
+
 .up-spinner {
     position: absolute;
     top: calc(50% - 0.5rem);

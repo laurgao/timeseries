@@ -23,7 +23,7 @@ const Input = ({name, value, setValue, type="text", id="", placeholder="", onCha
                 onChange={onChange ? onChange : e => setValue(e.target.value)}
             />}
             {type == "textarea" && <textarea
-                className="border-b w-full content my-2 py-2 btm-text-gray-500"
+                className="border rounded-md w-full content my-2 p-4 text-gray-500"
                 rows={7}
                 placeholder={placeholder}
                 value={value}
