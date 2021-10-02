@@ -28,7 +28,6 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
     const [iter, setIter] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const {data: notesData, error: notesError}: SWRResponse<{data: DatedObj<NoteObj>[]}, any> = useSWR(`/api/note?user=6155bf008b03df2a80327d63&iter=${iter}`, fetcher);
-    console.log(notesData, notesError)
 
     function onSubmit() {
         setIsLoading(true);
