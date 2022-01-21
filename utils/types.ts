@@ -6,9 +6,15 @@ export interface UserObj {
 }
 
 export interface NoteObj {
-    user: string; 
     body: string; 
     date: string; 
+    series: string; // id of series
+}
+
+export interface SeriesObj {
+    user: string; 
+    title: string; 
+    privacy: "private" | "publicVisible" | "publicCanEdit"; 
 }
 
 export interface SessionObj {

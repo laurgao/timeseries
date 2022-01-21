@@ -28,6 +28,7 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
     const [iter, setIter] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const {data: notesData, error: notesError}: SWRResponse<{data: DatedObj<NoteObj>[]}, any> = useSWR(`/api/note?user=6155bf008b03df2a80327d63&iter=${iter}`, fetcher);
+    console.log(notesData)
 
     function onSubmit() {
         setIsLoading(true);
@@ -92,7 +93,7 @@ export default function Home(props: {user: DatedObj<UserObj>}) {
                 </div>
             }
             {(notesData && notesData.data) ? notesData.data.length > 0 ? notesData.data.map(note => 
-                <div className="mb-16">
+                <div className="mb-16" key={note._id}>
                     <ContextMenuTrigger id={note._id}>
                         <H2 className="text-center mb-4">{note.date}</H2>
                     </ContextMenuTrigger>

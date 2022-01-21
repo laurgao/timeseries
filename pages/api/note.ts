@@ -7,9 +7,9 @@ import dbConnect from "../../utils/dbConnect";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
         case "GET": {
-            if (!(req.query.user || req.query.body || req.query.date)) {
-                return res.status(406).send("No user, body, or date provided in query.");                        
-            }
+            // if (!(req.query.user || req.query.body || req.query.date)) {
+            //     return res.status(406).send("No user, body, or date provided in query.");                        
+            // }
             
             try {                
                 let conditions = {};
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();   
             
                 const thisObject = await NoteModel.aggregate([
-                    {$match: conditions},
+                    // {$match: conditions},
                     {$sort: {"date": -1}},
                 ]);
                 
@@ -54,14 +54,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     
                     return res.status(200).json({message: "Note updated 😜"});                            
                 } else {
-                    if (!(req.body.body && req.body.date)) {
+                    if (!(req.body.body && req.body.date && req.body.series)) {
                         return res.status(406).send("Must provide a body and date to create a note.");          
                     }
 
                     const user = await UserModel.findOne({email: session.user.email})
+
+                    const mongoose = require("mongoose")
                     
                     const newNote = new NoteModel({
-                        user: user._id,
+                        user: mongoose.Types.ObjectId(req.body.series.toString()),
                         body: req.body.body,
                         date: req.body.date,                             
                     });
@@ -75,29 +77,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         }
         
-        case "DELETE": {
-            const session = await getSession({ req });
-            if (!session) return res.status(403);
+        // case "DELETE": {
+        //     const session = await getSession({ req });
+        //     if (!session) return res.status(403);
             
-            if (!req.body.id) return res.status(406);
+        //     if (!req.body.id) return res.status(406);
             
-            try {
-                await dbConnect();
+        //     try {
+        //         await dbConnect();
                                
-                const thisObject = await NoteModel.findById(req.body.id);
+        //         const thisObject = await NoteModel.findById(req.body.id);
                 
-                if (!thisObject) return res.status(404);
-                const user = await UserModel.findOne({email: session.user.email})
+        //         if (!thisObject) return res.status(404);
+        //         const user = await UserModel.findOne({email: session.user.email})
 
-                if (thisObject.user.toString() !== user._id.toString()) return res.status(403);
+        //         if (thisObject.user.toString() !== user._id.toString()) return res.status(403);
                 
-                await NoteModel.deleteOne({_id: req.body.id});
+        //         await NoteModel.deleteOne({_id: req.body.id});
                 
-                return res.status(200).json({message: "Note deleted 😜"});
-            } catch (e) {
-                return res.status(500).json({message: e});
-            }
-        }
+        //         return res.status(200).json({message: "Note deleted 😜"});
+        //     } catch (e) {
+        //         return res.status(500).json({message: e});
+        //     }
+        // }
         
         default:
             return res.status(405);
