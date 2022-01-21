@@ -6,7 +6,7 @@ const NotionButton = ({onClick, children} : {
     children: string
 }) => {
     return (
-        <Button containerClassName="opacity-40 transition cursor-pointer py-4 px-3 hover:bg-gray-100 rounded-xl w-full" onClick={onClick}>
+        <Button className="opacity-40 transition cursor-pointer py-4 px-3 hover:bg-gray-100 rounded-xl w-full" onClick={onClick}>
             <div className="flex items-center">
                 <FaPlus/>
                 <p className="ml-2.5">{children}</p>

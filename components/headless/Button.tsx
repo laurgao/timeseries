@@ -1,34 +1,35 @@
 import Link from "next/link";
 
-export type ButtonProps = (React.HTMLProps<HTMLButtonElement> | React.HTMLProps<HTMLAnchorElement>)
-    & {isLoading?: boolean, containerClassName?: string, childClassName?: string,};
+export type ButtonProps = (React.HTMLProps<HTMLButtonElement> | React.HTMLProps<HTMLAnchorElement>) 
+& {isLoading?: boolean, childClassName?: string}
 
 export default function Button(props: ButtonProps) {
-    const {href, isLoading, children, containerClassName, disabled} = props;
-    let domProps = {...props};
-    delete domProps.containerClassName;
-    delete domProps.childClassName;
+    const classNames = (
+        props.className 
+        + " p-2 relative" 
+        + (props.disabled ? " cursor-not-allowed opacity-50" : "") 
+        + (props.isLoading ? " cursor-wait" : "")
+    );
+    const childClassNames = props.childClassName + (props.isLoading ? " invisible" : "")
 
-    return (
-        <div className={`relative inline-block ${containerClassName || ""} ${disabled ? "opacity-25 cursor-not-allowed" : ""}`}>
-            {href ? (
-                <Link href={href}>
-                    {/* @ts-ignore */}
-                    <a {...domProps}>
-                        <div className={(isLoading ? "invisible " : "") + (props.childClassName || "")}>
-                            {children}
-                        </div>
-                    </a>
-                </Link>
-            ) : (
-                // @ts-ignore
-                <button {...domProps}>
-                    <div className={(isLoading ? "invisible " : "") + (disabled ? "cursor-not-allowed " : "") + (props.childClassName || "")}>
-                        {children}
-                    </div>
-                </button>
-            )}
-            {isLoading && <div className="up-spinner"/>}
-        </div>
-    )
+    const newProps = {...props}
+    delete newProps.isLoading
+    delete newProps.children
+    delete newProps.childClassName
+
+    return props.href ? (
+        <Link href={props.href}>
+            {/* @ts-ignore */}
+            <a {...newProps} className={classNames}>
+                <div className={childClassNames}>{props.children}</div>
+                {props.isLoading && <div className="up-spinner"/>}
+            </a>
+        </Link>
+    ) : (
+        // @ts-ignore
+        <button {...newProps} className={classNames} disabled={props.disabled || props.isLoading}>
+            <div className={childClassNames}>{props.children}</div>
+            {props.isLoading && <div className="up-spinner"/>}
+        </button>
+    );
 }
