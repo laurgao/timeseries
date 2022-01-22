@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { NoteModel } from "../../models/Note";
+import { SeriesModel } from "../../models/Series";
 import { UserModel } from "../../models/User";
 import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
@@ -64,7 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         case "POST": {
             const session = await getSession({ req });
-            if (!session) return res.status(403);
             try {
                 await dbConnect();
 
@@ -86,15 +86,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         return res.status(406).send("Must provide a seriesId, body, date to create a note.");
                     }
 
-                    const newNote = new NoteModel({
+                    const thisSeries = await SeriesModel.findById(req.body.seriesId);
+                    if (!thisSeries) return res.status(404).send("No series with this ID.");
+                    if (!session && thisSeries.privacy !== "publicCanEdit") return res.status(403).send("You do not have permission to create this note.");
+
+                    const newNote = await NoteModel.create({
                         seriesId: mongoose.Types.ObjectId(req.body.seriesId.toString()),
                         body: req.body.body,
                         date: req.body.date,
                     });
 
-                    const savedNote = await newNote.save();
-
-                    return res.status(200).json({ message: "Note created 😜", id: savedNote._id.toString() });
+                    return res.status(200).json({ message: "Note created 😜", id: newNote._id.toString() });
                 }
             } catch (e) {
                 return res.status(500).json({ message: e });
