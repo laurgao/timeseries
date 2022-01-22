@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const thisObject = await NoteModel.aggregate([
                     { $match: conditions },
                     ...pipeline,
-                    { $sort: { "date": -1 } },
+                    { $sort: { "date": -1, "createdAt": -1 } },
                 ]);
 
                 if (!thisObject || !thisObject.length) return res.status(404).json({ data: [] });
