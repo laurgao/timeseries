@@ -6,7 +6,6 @@ import Button from "../../components/headless/Button";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
 import H2 from "../../components/headless/H2";
-import H3 from "../../components/headless/H3";
 import Input from "../../components/headless/Input";
 import NotionButton from "../../components/headless/NotionButton";
 import PrimaryButton from "../../components/headless/PrimaryButton";
@@ -16,10 +15,7 @@ import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
 import { DatedObj, PrivacyTypes, SeriesObj, UserObj } from "../../utils/types";
 
-const UserProfilePage = ({
-    pageUser,
-    isOwner,
-}: {
+const UserProfilePage = ({ pageUser, isOwner, }: {
     pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] };
     isOwner: boolean;
 }) => {
