@@ -1,12 +1,14 @@
-import mongoose, {Model} from "mongoose";
+import mongoose, {Document, Model} from "mongoose";
 import {SeriesObj} from "../utils/types";
 
+interface SeriesDoc extends SeriesObj, Document {}
+
 const SeriesSchema = new mongoose.Schema({
-    userId: mongoose.Schema.Types.ObjectId,
-    title: {type: String, required: true},
-    privacy: {type: String, required: true},
+	title: { required: true, type: String }, 
+	userId: { required: true, type: mongoose.Schema.Types.ObjectId }, 
+	privacy: { required: true, type: String }, 
 }, {
-    timestamps: true,
+	timestamps: true,
 });
 
-export const SeriesModel = (!!mongoose.models && mongoose.models.series as Model<SeriesObj>) || mongoose.model<SeriesObj>("series", SeriesSchema);
+export const SeriesModel = mongoose.models.series || mongoose.model<SeriesDoc>("series", SeriesSchema);

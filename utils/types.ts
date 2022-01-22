@@ -8,13 +8,15 @@ export interface UserObj {
 export interface NoteObj {
     body: string; 
     date: string; 
-    series: string; // id of series
+    seriesId: string; // id of series
 }
+
+export type PrivacyTypes = "private" | "publicVisible" | "publicCanEdit"; 
 
 export interface SeriesObj {
     user: string; 
     title: string; 
-    privacy: "private" | "publicVisible" | "publicCanEdit"; 
+    privacy: PrivacyTypes;
 }
 
 export interface SessionObj {

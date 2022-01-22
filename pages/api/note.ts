@@ -2,33 +2,35 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { NoteModel } from "../../models/Note";
 import { UserModel } from "../../models/User";
+import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
+const mongoose = require("mongoose")
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
         case "GET": {
-            // if (!(req.query.user || req.query.body || req.query.date)) {
-            //     return res.status(406).send("No user, body, or date provided in query.");                        
-            // }
+            if (!(req.query.seriesId || req.query.body || req.query.date)) {
+                return res.status(406).send("No seriesId, body, or date provided in query.");                        
+            }
             
             try {                
                 let conditions = {};
 
                 if (req.query.id) conditions["_id"] = req.query.id;
-                if (req.query.user) conditions["user"] = req.query.user;
+                if (req.query.seriesId) conditions["seriesId"] = mongoose.Types.ObjectId(req.query.seriesId);
                 if (req.query.body) conditions["body"] = req.query.body;
                 if (req.query.date) conditions["date"] = req.query.date;
                 
                 await dbConnect();   
             
                 const thisObject = await NoteModel.aggregate([
-                    // {$match: conditions},
+                    {$match: conditions},
                     {$sort: {"date": -1}},
                 ]);
                 
                 if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
                 
-                return res.status(200).json({data: thisObject});
+                return res.status(200).json({data: cleanForJSON(thisObject)});
             } catch (e) {
                 return res.status(500).json({message: e});                        
             }
@@ -54,16 +56,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     
                     return res.status(200).json({message: "Note updated 😜"});                            
                 } else {
-                    if (!(req.body.body && req.body.date && req.body.series)) {
-                        return res.status(406).send("Must provide a body and date to create a note.");          
+                    if (!(req.body.body && req.body.date && req.body.seriesId)) {
+                        return res.status(406).send("Must provide a seriesId, body, date to create a note.");          
                     }
 
-                    const user = await UserModel.findOne({email: session.user.email})
-
-                    const mongoose = require("mongoose")
-                    
                     const newNote = new NoteModel({
-                        user: mongoose.Types.ObjectId(req.body.series.toString()),
+                        seriesId: mongoose.Types.ObjectId(req.body.seriesId.toString()),
                         body: req.body.body,
                         date: req.body.date,                             
                     });
@@ -77,29 +75,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         }
         
-        // case "DELETE": {
-        //     const session = await getSession({ req });
-        //     if (!session) return res.status(403);
+        case "DELETE": {
+            const session = await getSession({ req });
+            if (!session) return res.status(403);
             
-        //     if (!req.body.id) return res.status(406);
+            if (!req.body.id) return res.status(406);
             
-        //     try {
-        //         await dbConnect();
+            try {
+                await dbConnect();
                                
-        //         const thisObject = await NoteModel.findById(req.body.id);
+                const thisNote = (await NoteModel.aggregate([
+                    {$match: {_id: mongoose.Types.ObjectId(req.body.id.toString())}},
+                    {$lookup: {
+                        from: "series",
+                        localField: "seriesId", 
+                        foreignField: "_id",
+                        as: "seriesItem",
+                    }},
+                    {$unwind: "$seriesItem"},
+                ]))[0];
                 
-        //         if (!thisObject) return res.status(404);
-        //         const user = await UserModel.findOne({email: session.user.email})
+                if (!thisNote) return res.status(404);
+                const user = await UserModel.findOne({email: session.user.email})
 
-        //         if (thisObject.user.toString() !== user._id.toString()) return res.status(403);
+                if (thisNote.seriesItem.userId.toString() !== user._id.toString()) return res.status(403).send("You do not have permission to delete this note.");
                 
-        //         await NoteModel.deleteOne({_id: req.body.id});
+                await NoteModel.deleteOne({_id: req.body.id});
                 
-        //         return res.status(200).json({message: "Note deleted 😜"});
-        //     } catch (e) {
-        //         return res.status(500).json({message: e});
-        //     }
-        // }
+                return res.status(200).json({message: "Note deleted 😜"});
+            } catch (e) {
+                return res.status(500).json({message: e});
+            }
+        }
         
         default:
             return res.status(405);
