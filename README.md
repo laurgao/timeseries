@@ -1,19 +1,12 @@
-# Next MongoDB Nextauth Example
+# Timeseries
 
-Builds on [next-tailwind-typescript-example](https://github.com/wwsalmon/next-tailwind-typescript-example)
+Some notes are only related to each other by their chronology. This webapp is a simple way to take those notes. Inspired by ideas by [Samson Zhang](https://twitter.com/wwsalmon).  
+Built on Next.js and MongoDB.
 
-This starter takes care of boilerplate for:
-- Typescript and TailwindCSS
-- _document.tsx
-- Mongoose/MongoDB
-- [NextAuth](https://next-auth.js.org/) with MongoDB integration
-- Basic auth flow screens
-- SEO component
-- Base button and modal components
-
-To use, run `npx create-next-app -e https://github.com/wwsalmon/next-mongodb-nextauth-example`, then create a `.env`
-file with the following variables:
+To run locally, clone this repo then create a `.env` file in the root directory with the following variables:
 - MONGODB_URL
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
 - NEXTAUTH_URL
+
+Then run `npm run dev` in the root directory.
