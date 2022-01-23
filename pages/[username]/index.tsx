@@ -107,7 +107,7 @@ const UserProfilePage = ({
                 </div>
             )}
             <p className="font-bold text-gray-700 text-sm">All of {pageUser.name}'s Timeseries':</p>
-            {pageUser.seriesArr ? (
+            {(pageUser.seriesArr.length > 0) ? (
                 pageUser.seriesArr.map((series) => (
                     <Button key={series._id} href={`/${pageUser.username}/${series.title.toLowerCase()}`}>
                         <H2>{series.title}</H2>

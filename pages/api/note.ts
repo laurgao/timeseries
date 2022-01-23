@@ -29,7 +29,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             from: "series",
                             let: { "seriesId": "$seriesId" },
                             pipeline: [
-                                { $match: { $expr: { $eq: ["$_id", "$$seriesId"] } } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { $expr: { $eq: ["$_id", "$$seriesId"] } },
+                                            { $expr: { $not: { $eq: ["$privacy", "private"] } } },
+                                        ],
+                                    }
+                                },
                                 {
                                     $lookup: {
                                         from: "users",
@@ -42,8 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             ],
                             as: "series",
                         }
-                    }
-                    )
+                    })
+                    pipeline.push({ $match: { series: { $ne: [] } } })
                     pipeline.push({ $unwind: "$series" })
                 }
 
@@ -119,16 +126,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             from: "series",
                             localField: "seriesId",
                             foreignField: "_id",
-                            as: "seriesItem",
+                            as: "series",
                         }
                     },
-                    { $unwind: "$seriesItem" },
+                    { $unwind: "$series" },
                 ]))[0];
 
                 if (!thisNote) return res.status(404);
                 const user = await UserModel.findOne({ email: session.user.email })
 
-                if (thisNote.seriesItem.userId.toString() !== user._id.toString()) return res.status(403).send("You do not have permission to delete this note.");
+                if (thisNote.series.userId.toString() !== user._id.toString()) return res.status(403).send("You do not have permission to delete this note.");
 
                 await NoteModel.deleteOne({ _id: req.body.id });
 

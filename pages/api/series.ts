@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 const thisSeries = await SeriesModel.aggregate([
                     { $match: conditions },
-                    { $skip: (+req.query.page - 1) * 10 },
+                    { $skip: (+req.query.page) * 10 }, // +null = 0
                     { $limit: 10 },
                 ]);
 

@@ -14,11 +14,6 @@ import fetcher from "../utils/fetcher";
 import { DatedObj, NoteObj, SeriesObj, UserObj } from "../utils/types";
 
 type NoteObjGraph = NoteObj & { series: SeriesObj & { user: UserObj } };
-type n = Omit<NoteObj, "body">
-const todo: n = {
-    "seriesId": "f",
-    "date": "s"
-}
 
 export default function Home(props: { user: DatedObj<UserObj> }) {
     const { data: notesData, error: notesError }: SWRResponse<{ data: DatedObj<NoteObjGraph>[] }, any> = useSWR(
