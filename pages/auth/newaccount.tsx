@@ -1,15 +1,20 @@
-import {GetServerSideProps} from "next";
-import {getSession, signIn, useSession} from "next-auth/client";
 import axios from "axios";
-import {useRouter} from "next/router";
-import {useState} from "react";
-import SEO from "../../components/SEO";
+import { GetServerSideProps } from "next";
+import { getSession, signIn, useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import Button from "../../components/headless/Button";
-import {UserModel} from "../../models/User";
+import Container from "../../components/headless/Container";
+import H1 from "../../components/headless/H1";
+import H3 from "../../components/headless/H3";
+import Input from "../../components/headless/Input";
+import PrimaryButton from "../../components/headless/PrimaryButton";
+import { navbarHeight } from "../../components/Navbar";
+import SEO from "../../components/SEO";
+import { UserModel } from "../../models/User";
 import dbConnect from "../../utils/dbConnect";
 
-export default function NewAccount({}: {}) {
+export default function SignIn({}: {}) {
     const router = useRouter();
     const [session, loading] = useSession();
     const [username, setUsername] = useState<string>("");
@@ -19,67 +24,77 @@ export default function NewAccount({}: {}) {
     function onSubmit() {
         setIsLoading(true);
 
-        axios.post("/api/auth/account", {
-            username: username,
-        }).then(res => {
-            if (res.data.error) {
-                setError(res.data.error);
+        axios
+            .post("/api/auth/account", {
+                username: username,
+            })
+            .then((res) => {
+                if (res.data.error) {
+                    setError(res.data.error);
+                    setIsLoading(false);
+                } else {
+                    console.log("redirecting...");
+                    router.push("/profile")
+                }
+            })
+            .catch((e) => {
                 setIsLoading(false);
-            } else {
-                console.log("redirecting...");
-                signIn("google").then(() => router.push("/app")).catch(e => console.log(e));
-            }
-        }).catch(e => {
-            setIsLoading(false);
-            setError("An unknown error occurred.");
-            console.log(e);
-        });
+                setError("An unknown error occurred.");
+                console.log(e);
+            });
     }
 
     return (
         <>
-            <SEO title="New account"/>
-            <h1>Create new account</h1>
-            {loading ? (
-                <Skeleton count={2}/>
-            ) : (
-                <div className="flex items-center">
-                    <img
-                        src={session.user.image}
-                        alt={`Profile picture of ${session.user.name}`}
-                        className="rounded-full h-12 h-12 mr-4"
-                    />
-                    <div>
-                        <p>{session.user.name}</p>
-                        <p>{session.user.email}</p>
-                    </div>
-                </div>
-            )}
-            <h2>Choose a username</h2>
-            <div className="flex items-center">
-                <p className="opacity-50">your-domain.com/@</p>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={e => {
-                        setUsername(e.target.value);
-                        if (e.target.value !== encodeURIComponent(e.target.value)) {
-                            setError("URLs cannot contain spaces or special characters.");
-                        }
-                        setError(null);
-                    }}
-                />
-            </div>
-            {error && (
-                <p className="text-red-500">{error}</p>
-            )}
-            <Button
-                isLoading={isLoading}
-                onClick={onSubmit}
-                disabled={loading || username !== encodeURIComponent(username) || username.length === 0}
+            <SEO title="Create new account" />
+            <Container
+                className="text-center flex w-screen items-center justify-center"
+                style={{ height: `calc(100vh - ${navbarHeight * 2}px)` }}
             >
-                Let's get started!
-            </Button>
+                <div>
+                    <H1 className="mb-8">Welcome to Timeseries!</H1>
+                    {loading ? (
+                        <Skeleton count={2} />
+                    ) : (
+                        <div className="flex items-center text-left">
+                            <img
+                                src={session.user.image}
+                                alt={`Profile picture of ${session.user.name}`}
+                                className="rounded-full h-12 mr-4"
+                            />
+                            <div>
+                                <p>{session.user.name}</p>
+                                <p>{session.user.email}</p>
+                            </div>
+                        </div>
+                    )}
+                    <H3 className="mt-8">Choose a username</H3>
+                    <div className="flex items-center">
+                        <p className="opacity-50">timeseries.vercel.com/</p>
+                        <Input
+                            type="text"
+                            value={username}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                if (e.target.value !== encodeURIComponent(e.target.value)) {
+                                    setError("URLs cannot contain spaces or special characters.");
+                                }
+                                setError(null);
+                            }}
+                            autoFocus // waow this works when u are redirected here from /profile!
+                        />
+                    </div>
+                    {error && <p className="text-red-500 font-bold">{error}</p>}
+                    <PrimaryButton
+                        isLoading={isLoading}
+                        onClick={onSubmit}
+                        disabled={loading || username !== encodeURIComponent(username) || username.length === 0}
+                        className="mt-8"
+                    >
+                        Let's get started!
+                    </PrimaryButton>
+                </div>
+            </Container>
         </>
     );
 }
@@ -87,14 +102,14 @@ export default function NewAccount({}: {}) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
 
-    if (!session) return {redirect: {permanent: false, destination: "/auth/signin"}};
+    if (!session) return { redirect: { permanent: false, destination: "/auth/welcome" } };
 
     try {
         await dbConnect();
-        const thisUser = await UserModel.findOne({email: session.user.email});
-        return thisUser ? {redirect: {permanent: false, destination: "/app"}} : {props: {}};
+        const thisUser = await UserModel.findOne({ email: session.user.email });
+        return thisUser ? { redirect: { permanent: false, destination: "/profile" } } : { props: {} };
     } catch (e) {
         console.log(e);
-        return {notFound: true};
+        return { notFound: true };
     }
 };
