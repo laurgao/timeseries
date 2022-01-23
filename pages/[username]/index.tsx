@@ -25,7 +25,13 @@ const UserProfilePage = ({
     const [newSeriesTitle, setNewSeriesTitle] = useState<string>(null);
     const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<PrivacyTypes | "">(""); // select's value should not be null
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const disabled = !newSeriesTitle || !newSeriesPrivacy;
+    const [error, setError] = useState<string>("");
+    const disabled = !newSeriesTitle || !newSeriesPrivacy || newSeriesTitle !== encodeURIComponent(newSeriesTitle);
+
+    const reset = () => {
+        setNewSeriesTitle(null);
+        setNewSeriesPrivacy("");
+    };
 
     function onSubmit() {
         if (disabled) return;
@@ -33,8 +39,8 @@ const UserProfilePage = ({
         axios
             .post("/api/series", { title: newSeriesTitle, user: pageUser._id, privacy: newSeriesPrivacy })
             .then((res) => {
-                setNewSeriesTitle(null);
-                setNewSeriesPrivacy("");
+                if (res.data.error) setError(res.data.error);
+                else reset();
             })
             .catch((e) => console.log(e))
             .finally(() => setIsLoading(false));
@@ -55,15 +61,16 @@ const UserProfilePage = ({
                         <>
                             <Input
                                 value={newSeriesTitle}
-                                setValue={setNewSeriesTitle}
+                                onChange={(e) => {
+                                    setNewSeriesTitle(e.target.value);
+                                    if (e.target.value !== encodeURIComponent(e.target.value)) {
+                                        setError("Title cannot contain spaces or special characters.");
+                                    } else setError(null);
+                                }}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
-                                        if (e.ctrlKey) onSubmit()
-                                    }
-                                    else if (e.key === "Escape") {
-                                        setNewSeriesTitle(null);
-                                        setNewSeriesPrivacy("");
-                                    }
+                                        if (e.ctrlKey) onSubmit();
+                                    } else if (e.key === "Escape") reset();
                                 }}
                                 className="mb-4"
                                 childClassName="px-2" // to line up with select
@@ -84,14 +91,14 @@ const UserProfilePage = ({
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         if (e.ctrlKey) onSubmit();
-                                    }
-                                    else if (e.key === "Escape") {
+                                    } else if (e.key === "Escape") {
                                         setNewSeriesTitle(null);
                                         setNewSeriesPrivacy("");
                                     }
                                 }}
                             />
                             {!disabled && <p className="text-gray-400 text-xs px-2 mt-2">Ctrl + Enter to submit</p>}
+                            {error && <p className="text-red-500 font-bold mt-4 px-2">{error}</p>}
                             <PrimaryButton className="mt-8 mb-16" onClick={onSubmit} disabled={disabled} isLoading={isLoading}>
                                 Create new series
                             </PrimaryButton>
