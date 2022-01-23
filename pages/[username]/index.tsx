@@ -15,15 +15,20 @@ import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
 import { DatedObj, PrivacyTypes, SeriesObj, UserObj } from "../../utils/types";
 
-const UserProfilePage = ({ pageUser, isOwner, }: {
+const UserProfilePage = ({
+    pageUser,
+    isOwner,
+}: {
     pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] };
     isOwner: boolean;
 }) => {
     const [newSeriesTitle, setNewSeriesTitle] = useState<string>(null);
-    const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<PrivacyTypes | "">(""); // select's value should not be "null"
+    const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<PrivacyTypes | "">(""); // select's value should not be null
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const disabled = !newSeriesTitle || !newSeriesPrivacy;
 
     function onSubmit() {
+        if (disabled) return;
         setIsLoading(true);
         axios
             .post("/api/series", { title: newSeriesTitle, user: pageUser._id, privacy: newSeriesPrivacy })
@@ -52,18 +57,23 @@ const UserProfilePage = ({ pageUser, isOwner, }: {
                                 value={newSeriesTitle}
                                 setValue={setNewSeriesTitle}
                                 onKeyDown={(e) => {
-                                    if (e.key === "Enter") onSubmit();
+                                    if (e.key === "Enter") {
+                                        if (e.ctrlKey) onSubmit()
+                                    }
                                     else if (e.key === "Escape") {
                                         setNewSeriesTitle(null);
                                         setNewSeriesPrivacy("");
                                     }
                                 }}
-                                className="my-8"
+                                className="mb-4"
+                                childClassName="px-2" // to line up with select
                                 placeholder="Title"
+                                autoFocus
                             />
                             <Select
-                                className="block mb-8"
+                                className="block"
                                 value={newSeriesPrivacy}
+                                default="Select privacy"
                                 // @ts-ignore properly value exists on e.target
                                 onChange={(e) => setNewSeriesPrivacy(e.target.value)}
                                 options={[
@@ -71,12 +81,18 @@ const UserProfilePage = ({ pageUser, isOwner, }: {
                                     { value: "publicVisible", label: "Public (visible)" },
                                     { value: "publicCanEdit", label: "Public (can edit)" },
                                 ]}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        if (e.ctrlKey) onSubmit();
+                                    }
+                                    else if (e.key === "Escape") {
+                                        setNewSeriesTitle(null);
+                                        setNewSeriesPrivacy("");
+                                    }
+                                }}
                             />
-                            <PrimaryButton
-                                onClick={onSubmit}
-                                disabled={!newSeriesTitle || !newSeriesPrivacy}
-                                isLoading={isLoading}
-                            >
+                            {!disabled && <p className="text-gray-400 text-xs px-2 mt-2">Ctrl + Enter to submit</p>}
+                            <PrimaryButton className="mt-8 mb-16" onClick={onSubmit} disabled={disabled} isLoading={isLoading}>
                                 Create new series
                             </PrimaryButton>
                         </>
@@ -84,13 +100,16 @@ const UserProfilePage = ({ pageUser, isOwner, }: {
                 </div>
             )}
             <p className="font-bold text-gray-700 text-sm">All of {pageUser.name}'s Timeseries':</p>
-            {pageUser.seriesArr &&
+            {pageUser.seriesArr ? (
                 pageUser.seriesArr.map((series) => (
                     <Button key={series._id} href={`/${pageUser.username}/${series.title.toLowerCase()}`}>
                         <H2>{series.title}</H2>
                     </Button>
                     // latest notes maybe?
-                ))}
+                ))
+            ) : (
+                <p>No timeseries had been created... yet 😏</p>
+            )}
         </Container>
     );
 };

@@ -2,29 +2,31 @@ import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 
 export default function SEO({
-                                  title = "Timeseries",
-                                  description = "Take notes that are only related to each other by their chronology.",
-                                  imgUrl = null,
-                                  authorUsername = null,
-                                  publishedDate = null,
-                                  noindex = false,
-                              }: { title?: string, description?: string, imgUrl?: string, authorUsername?: string, publishedDate?: string, noindex?: boolean }) {
+    title = "",
+    description = "Take notes that are only related to each other by their chronology.",
+    imgUrl = null,
+    authorUsername = null,
+    publishedDate = null,
+    noindex = false,
+}: { title?: string, description?: string, imgUrl?: string, authorUsername?: string, publishedDate?: string, noindex?: boolean }) {
     const router = useRouter();
-    const fullTitle = title + (router.asPath === "/" ? "" : " | YourApp");
+    let fullTitle;
+    if (title) fullTitle = title + " | Timeseries";
+    else fullTitle = "Timeseries: take notes that are only related to each other by their chronology."
 
     let openGraph = {
         title: fullTitle,
         description: description,
-        url: "https://your-domain.com" + router.asPath,
+        url: "https://timeseries.vercel.app" + router.asPath,
         images: imgUrl ? [
             { url: imgUrl }
         ] : [
-            { url: "https://your-domain.com/defaultImage.png" }
+            { url: "/hero.png" }
         ],
     };
 
     let twitter = {
-        site: "@your-at",
+        site: "@laurgao",
         cardType: imgUrl ? "summary_large_image" : "summary",
     };
 

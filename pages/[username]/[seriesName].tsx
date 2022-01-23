@@ -2,6 +2,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
+import Link from "next/link";
 import React, { useState } from 'react';
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { FiTrash } from "react-icons/fi";
@@ -20,9 +21,9 @@ import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
 import fetcher from "../../utils/fetcher";
 import useKey, { waitForEl } from "../../utils/key";
-import { DatedObj, NoteObj, SeriesObj } from "../../utils/types";
+import { DatedObj, NoteObj, SeriesObj, UserObj } from "../../utils/types";
 
-const TimeseriesPage = ({ thisSeries, canEdit, isOwner }: { thisSeries: DatedObj<SeriesObj>, canEdit: boolean, isOwner: boolean }) => {
+const TimeseriesPage = ({ thisSeries, canEdit, isOwner }: { thisSeries: DatedObj<SeriesObj & { user: UserObj }>, canEdit: boolean, isOwner: boolean }) => {
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
     const [body, setBody] = useState<string>("");
     const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
@@ -68,7 +69,18 @@ const TimeseriesPage = ({ thisSeries, canEdit, isOwner }: { thisSeries: DatedObj
             <SEO />
             <Container width="xl">
                 <>
-                    <H1 className="mb-8 text-center">{thisSeries.title}</H1>
+                    {/* mb make this a PageHeader component bc it's already used on like 3 pages */}
+                    <div className="mb-8 text-center">
+                        <H1>{thisSeries.title}</H1>
+                        <p className="text-gray-400">
+                            By{" "}
+                            <Link href={`/${thisSeries.user.username}`}>
+                                <a className="underline">
+                                    {"@" + thisSeries.user.username}
+                                </a>
+                            </Link>
+                        </p>
+                    </div>
                     {canEdit && !addNoteIsOpen &&
                         <div className="my-4"><NotionButton onClick={() => {
                             setAddNoteIsOpen(true);
@@ -90,7 +102,7 @@ const TimeseriesPage = ({ thisSeries, canEdit, isOwner }: { thisSeries: DatedObj
                                         }
                                     }}
                                 />
-                                <p className="text-gray-400 text-sm">Ctrl+Enter to add note</p>
+                                <p className="text-gray-400 text-xs">Ctrl + Enter to submit</p>
                             </div>
                             <PrimaryButton onClick={onSubmit} disabled={!body || !date} isLoading={isLoading}>Add note</PrimaryButton>
                         </div>
@@ -117,24 +129,43 @@ const TimeseriesPage = ({ thisSeries, canEdit, isOwner }: { thisSeries: DatedObj
 export default TimeseriesPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { username, seriesName } = context.params
     const session = await getSession(context);
 
     try {
         await dbConnect();
-        // const pageUser = await UserModel.findOne({username: context.params.username});
-        // const thisSeries = await SeriesModel.findOne({title: /^bar$/i});
-        // const thisSeries = await SeriesModel.findOne({title: {$regex: `${context.params.seriesName}`, $options: "i"}});
 
         // Case insensitive search from https://stackoverflow.com/questions/1863399/mongodb-is-it-possible-to-make-a-case-insensitive-query
-        const thisSeries = await SeriesModel.findOne({ title: { $regex: `^${context.params.seriesName}$`, $options: "i" } });
+        const thisSeries = (await SeriesModel.aggregate([
+            { $match: { title: { $regex: `^${seriesName}$`, $options: "i" } } },
+            {
+                $lookup: {
+                    from: "users",
+                    let: { "userId": "$userId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    { $expr: { $eq: ["$_id", "$$userId"] } },
+                                    { $expr: { $eq: ["$username", username] } }
+                                ]
+                            }
+                        },
+                    ],
+                    as: "user",
+                }
+            },
+            { $unwind: "$user" },
+        ]))[0];
         if (!thisSeries) return { notFound: true }
 
         if (!session) return { props: { thisSeries: cleanForJSON(thisSeries), canEdit: thisSeries.privacy === "publicCanEdit", isOwner: false } };
         const sessionUser = await UserModel.findOne({ email: session.user.email })
-
+        if (!sessionUser) return { props: { thisSeries: cleanForJSON(thisSeries), canEdit: thisSeries.privacy === "publicCanEdit", isOwner: false } };
+        
         const isOwner = (sessionUser._id.toString() === thisSeries.userId.toString());
         const canEdit = thisSeries.privacy === "publicCanEdit" || isOwner
-        return { props: { thisSeries: cleanForJSON(thisSeries), canEdit: canEdit , isOwner: isOwner} };
+        return { props: { thisSeries: cleanForJSON(thisSeries), canEdit: canEdit, isOwner: isOwner } };
     } catch (e) {
         console.log(e);
         return { notFound: true };

@@ -1,18 +1,19 @@
 import { FaPlus } from "react-icons/fa";
-import Button from "./Button";
+import Button, { ButtonProps } from "./Button";
 
-const NotionButton = ({onClick, children} : {
-    onClick: () => any,
-    children: string
-}) => {
+const NotionButton = (props: Omit<ButtonProps, "childClassName">) => {
+    let newProps = { ...props };
+    newProps.className += ` opacity-40 transition cursor-pointer py-4 px-3 hover:bg-gray-100 rounded-xl w-full`;
+    delete newProps.children;
     return (
-        <Button className="opacity-40 transition cursor-pointer py-4 px-3 hover:bg-gray-100 rounded-xl w-full" onClick={onClick}>
-            <div className="flex items-center">
-                <FaPlus/>
-                <p className="ml-2.5">{children}</p>
-            </div>
+        // @ts-ignore idk why this doesn't work but i'll fio later.
+        <Button {...newProps} childClassName="flex items-center">
+            <>
+                <FaPlus />
+                <p className="ml-2.5">{props.children}</p>
+            </>
         </Button>
-    )
-}
+    );
+};
 
-export default NotionButton
+export default NotionButton;

@@ -1,13 +1,14 @@
-import Button from "./headless/Button";
-import {FaGoogle} from "react-icons/fa";
-import {signIn} from "next-auth/client";
+import { signIn } from "next-auth/client";
+import { FaGoogle } from "react-icons/fa";
+import PrimaryButton from "./headless/PrimaryButton";
 
-export default function SignInButton() {
+export default function SignInButton(props: { isLoading?: boolean; className?: string }) {
     return (
-        <Button onClick={() => signIn("google")}>
+        <PrimaryButton onClick={() => signIn("google")} {...props}>
             <div className="flex items-center">
-                <FaGoogle/><span className="ml-2">Sign in</span>
+                <FaGoogle />
+                <span className="ml-2">Sign in</span>
             </div>
-        </Button>
+        </PrimaryButton>
     );
 }

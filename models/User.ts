@@ -1,13 +1,17 @@
-import mongoose, {Document, Model} from "mongoose";
-import {UserObj} from "../utils/types";
+import mongoose, { Document } from "mongoose";
+import { UserObj } from "../utils/types";
 
-const UserSchema = new mongoose.Schema({
-    email: { required: true, type: String },
-    name: { required: true, type: String },
-    image: { required: true, type: String },
-    username: { required: true, type: String },
-}, {
-    timestamps: true,
-});
+interface SeriesDoc extends UserObj, Document {}
+const UserSchema = new mongoose.Schema(
+    {
+        email: { required: true, type: String },
+        name: { required: true, type: String },
+        image: { required: true, type: String },
+        username: { required: true, type: String },
+    },
+    {
+        timestamps: true,
+    }
+);
 
-export const UserModel: Model<Document<UserObj>> = mongoose.models.user || mongoose.model("user", UserSchema);
+export const UserModel = mongoose.models.user || mongoose.model<SeriesDoc>("user", UserSchema);
