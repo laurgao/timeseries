@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
 import { res404 } from "next-response-helpers";
-import Link from "next/link";
 import React, { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
@@ -12,6 +11,7 @@ import H1 from "../../components/headless/H1";
 import Input from "../../components/headless/Input";
 import Note from "../../components/Note";
 import SEO from "../../components/SEO";
+import A from "../../components/style/A";
 import NotionButton from "../../components/style/NotionButton";
 import PrimaryButton from "../../components/style/PrimaryButton";
 import { SeriesModel } from "../../models/Series";
@@ -74,10 +74,7 @@ const TimeseriesPage = ({
                     <div className="mb-8 text-center">
                         <H1>{thisSeries.title}</H1>
                         <p className="text-gray-400">
-                            By{" "}
-                            <Link href={`/${thisSeries.user.username}`}>
-                                <a className="underline">{"@" + thisSeries.user.username}</a>
-                            </Link>
+                            By <A href={`/${thisSeries.user.username}`}>{"@" + thisSeries.user.username}</A>
                         </p>
                     </div>
                     {canEdit && !addNoteIsOpen && (
