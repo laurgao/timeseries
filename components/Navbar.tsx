@@ -12,7 +12,7 @@ export default function Navbar() {
     const router = useRouter();
 
     return (
-        <div className="w-full sticky top-0">
+        <div className="w-full sticky top-0 z-40">
             <Container className="flex items-center py-2 bg-gray-100 border-b border-gray-400" width="full">
                 <Link href="/"><a>Timeseries</a></Link>
                 <div className="ml-auto flex items-center" style={{ gridGap: 16 }}>
