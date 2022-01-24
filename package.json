@@ -15,6 +15,8 @@
         "@types/react": "^17.0.0",
         "axios": "^0.21.1",
         "date-fns": "^2.22.1",
+        "linkify-react": "^3.0.4",
+        "linkifyjs": "^3.0.5",
         "mongoose": "^5.12.13",
         "next": "^11.1.2",
         "next-auth": "^3.25.0",

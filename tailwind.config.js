@@ -26,6 +26,7 @@ let safelist = [];
 for (let color of tailwindColors) {
     safelist.push(`bg-${color}-400`); // primary button bg
     safelist.push(`hover:text-${color}-400`); // a tags
+    safelist.push(`text-${color}-400`); // a tags
 }
 
 module.exports = {
