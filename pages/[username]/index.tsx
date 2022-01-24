@@ -2,6 +2,7 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
 import React, { useState } from "react";
+import { useToasts } from 'react-toast-notifications';
 import Button from "../../components/headless/Button";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
@@ -13,6 +14,7 @@ import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
 import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
+import showToast from "../../utils/showToast";
 import { DatedObj, PrivacyTypes, SeriesObj, UserObj } from "../../utils/types";
 
 const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] }; isOwner: boolean }) => {
@@ -25,8 +27,10 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
     const reset = () => {
         setNewSeriesTitle(null);
         setNewSeriesPrivacy("");
+        setError("");
     };
 
+    const { addToast } = useToasts();
     function onSubmit() {
         if (disabled) return;
         setIsLoading(true);
@@ -34,7 +38,10 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
             .post("/api/series", { title: newSeriesTitle, user: pageUser._id, privacy: newSeriesPrivacy })
             .then((res) => {
                 if (res.data.error) setError(res.data.error);
-                else reset();
+                else {
+                    reset();
+                    showToast(true, "Series created! Refresh this page to see your new series.", addToast);
+                }
             })
             .catch((e) => console.log(e))
             .finally(() => setIsLoading(false));
