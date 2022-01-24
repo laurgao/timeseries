@@ -60,9 +60,11 @@ const Note = ({
                     </MenuItem>
                 </ContextMenu>
             )}
-            <Linkify tagName="pre" options={{ className: `text-${color}-400 underline` }}>
-                {note.body}
-            </Linkify>
+            <div className="overflow-hidden break-words">
+                <Linkify tagName="pre" options={{ className: `text-${color}-400 underline` }}>
+                    {note.body}
+                </Linkify>
+            </div>
         </div>
     );
 };
