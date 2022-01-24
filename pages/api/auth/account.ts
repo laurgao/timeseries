@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).send("Missing username");
             }
 
-            if (["profile", "index", "auth", "settings", "api"].includes(req.body.username))
+            if (["profile", "index", "auth", "app", "api"].includes(req.body.username))
                 return res.status(200).json({ error: "Invalid username" });
 
             try {
