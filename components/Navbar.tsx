@@ -20,6 +20,7 @@ export default function Navbar() {
                         <>
                             <Button onClick={() => signOut()} className="text-sm">Sign out</Button>
                             <Button href="/profile" className="text-sm">Profile</Button>
+                            <Button href="/settings" className="text-sm">Settings</Button>
                             <Image
                                 src={session.user.image}
                                 alt={`Profile picture of ${session.user.name}`}
