@@ -4,27 +4,21 @@ import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
-import PrimaryButton from "../../components/headless/PrimaryButton";
 import { navbarHeight } from "../../components/Navbar";
 import SEO from "../../components/SEO";
+import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
 import dbConnect from "../../utils/dbConnect";
-
 
 export default function Welcome({}: {}) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     return (
         <>
             <SEO title="Sign in" />
-            <Container
-                className="text-center flex w-screen items-center justify-center"
-                style={{ height: `calc(100vh - ${navbarHeight * 2}px)` }}
-            >
+            <Container className="text-center flex w-screen items-center justify-center" style={{ height: `calc(100vh - ${navbarHeight * 2}px)` }}>
                 <div>
                     <H1 className="mb-4">Welcome to Timeseries</H1>
-                    <p className="mb-8">
-                        Click the button below to sign in to or sign up for Timeseries with your Google account.
-                    </p>
+                    <p className="mb-8">Click the button below to sign in to or sign up for Timeseries with your Google account.</p>
                     {/* Sign in button */}
                     <PrimaryButton
                         onClick={() => {

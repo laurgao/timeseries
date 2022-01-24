@@ -1,5 +1,5 @@
 import { FaPlus } from "react-icons/fa";
-import Button, { ButtonProps } from "./Button";
+import Button, { ButtonProps } from "../headless/Button";
 
 const NotionButton = (props: Omit<ButtonProps, "childClassName">) => {
     let newProps = { ...props };

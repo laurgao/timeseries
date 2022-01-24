@@ -7,21 +7,15 @@ import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
 import H2 from "../../components/headless/H2";
 import Input from "../../components/headless/Input";
-import NotionButton from "../../components/headless/NotionButton";
-import PrimaryButton from "../../components/headless/PrimaryButton";
 import Select from "../../components/headless/Select";
+import NotionButton from "../../components/style/NotionButton";
+import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
 import cleanForJSON from "../../utils/cleanForJSON";
 import dbConnect from "../../utils/dbConnect";
 import { DatedObj, PrivacyTypes, SeriesObj, UserObj } from "../../utils/types";
 
-const UserProfilePage = ({
-    pageUser,
-    isOwner,
-}: {
-    pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] };
-    isOwner: boolean;
-}) => {
+const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] }; isOwner: boolean }) => {
     const [newSeriesTitle, setNewSeriesTitle] = useState<string>(null);
     const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<PrivacyTypes | "">(""); // select's value should not be null
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -107,7 +101,7 @@ const UserProfilePage = ({
                 </div>
             )}
             <p className="font-bold text-gray-700 text-sm">All of {pageUser.name}'s Timeseries':</p>
-            {(pageUser.seriesArr.length > 0) ? (
+            {pageUser.seriesArr.length > 0 ? (
                 pageUser.seriesArr.map((series) => (
                     <Button key={series._id} href={`/${pageUser.username}/${series.title.toLowerCase()}`}>
                         <H2>{series.title}</H2>

@@ -22,9 +22,15 @@ const tailwindColors = [
     "rose",
 ];
 
+let safelist = [];
+for (let color of tailwindColors) {
+    safelist.push(`bg-${color}-400`); // primary button bg
+    safelist.push(`hover:text-${color}-400`); // a tags
+}
+
 module.exports = {
     content: ["./**/*.html", "./**/*.tsx"],
-    safelist: tailwindColors.map((color) => `bg-${color}-400`),
+    safelist: safelist,
     theme: {
         container: {
             center: true,

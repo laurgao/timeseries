@@ -1,19 +1,16 @@
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
-import Link from "next/link";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
 import Container from "../components/headless/Container";
 import H1 from "../components/headless/H1";
-import H2 from "../components/headless/H2";
+import Note from "../components/Note";
 import SEO from "../components/SEO";
 import { UserModel } from "../models/User";
 import cleanForJSON from "../utils/cleanForJSON";
 import dbConnect from "../utils/dbConnect";
 import fetcher from "../utils/fetcher";
-import { DatedObj, NoteObj, SeriesObj, UserObj } from "../utils/types";
-
-type NoteObjGraph = NoteObj & { series: SeriesObj & { user: UserObj } };
+import { DatedObj, NoteObjGraph, UserObj } from "../utils/types";
 
 export default function Home(props: { user: DatedObj<UserObj> }) {
     const { data: notesData, error: notesError }: SWRResponse<{ data: DatedObj<NoteObjGraph>[] }, any> = useSWR(
@@ -32,22 +29,7 @@ export default function Home(props: { user: DatedObj<UserObj> }) {
                     </div>
                     {notesData && notesData.data ? (
                         notesData.data.length > 0 ? (
-                            notesData.data.map((note) => (
-                                <div className="mb-16" key={note._id}>
-                                    <div className="text-center mb-4">
-                                        <H2>{note.date}</H2>
-                                        <p className="text-sm text-gray-400">
-                                            Series:{" "}
-                                            <a className="underline">
-                                                <Link href={`/${note.series.user.username}/${note.series.title.toLowerCase()}`}>
-                                                    {note.series.title}
-                                                </Link>
-                                            </a>
-                                        </p>
-                                    </div>
-                                    <pre>{note.body}</pre>
-                                </div>
-                            ))
+                            notesData.data.map((note) => <Note key={note._id} note={note} includeSubtitle />)
                         ) : (
                             <p>No notes.</p>
                         )

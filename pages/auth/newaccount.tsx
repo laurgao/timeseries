@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { getSession, signIn, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -8,9 +8,9 @@ import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
 import H3 from "../../components/headless/H3";
 import Input from "../../components/headless/Input";
-import PrimaryButton from "../../components/headless/PrimaryButton";
 import { navbarHeight } from "../../components/Navbar";
 import SEO from "../../components/SEO";
+import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
 import dbConnect from "../../utils/dbConnect";
 
@@ -34,7 +34,7 @@ export default function SignIn({}: {}) {
                     setIsLoading(false);
                 } else {
                     console.log("redirecting...");
-                    router.push("/profile")
+                    router.push("/profile");
                 }
             })
             .catch((e) => {
@@ -47,21 +47,14 @@ export default function SignIn({}: {}) {
     return (
         <>
             <SEO title="Create new account" />
-            <Container
-                className="text-center flex w-screen items-center justify-center"
-                style={{ height: `calc(100vh - ${navbarHeight * 2}px)` }}
-            >
+            <Container className="text-center flex w-screen items-center justify-center" style={{ height: `calc(100vh - ${navbarHeight * 2}px)` }}>
                 <div>
                     <H1 className="mb-8">Welcome to Timeseries!</H1>
                     {loading ? (
                         <Skeleton count={2} />
                     ) : (
                         <div className="flex items-center text-left">
-                            <img
-                                src={session.user.image}
-                                alt={`Profile picture of ${session.user.name}`}
-                                className="rounded-full h-12 mr-4"
-                            />
+                            <img src={session.user.image} alt={`Profile picture of ${session.user.name}`} className="rounded-full h-12 mr-4" />
                             <div>
                                 <p>{session.user.name}</p>
                                 <p>{session.user.email}</p>

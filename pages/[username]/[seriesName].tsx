@@ -5,17 +5,15 @@ import { getSession } from "next-auth/client";
 import { res404 } from "next-response-helpers";
 import Link from "next/link";
 import React, { useState } from "react";
-import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
-import { FiTrash } from "react-icons/fi";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
-import H2 from "../../components/headless/H2";
 import Input from "../../components/headless/Input";
-import NotionButton from "../../components/headless/NotionButton";
-import PrimaryButton from "../../components/headless/PrimaryButton";
+import Note from "../../components/Note";
 import SEO from "../../components/SEO";
+import NotionButton from "../../components/style/NotionButton";
+import PrimaryButton from "../../components/style/PrimaryButton";
 import { SeriesModel } from "../../models/Series";
 import { UserModel } from "../../models/User";
 import cleanForJSON from "../../utils/cleanForJSON";
@@ -54,18 +52,6 @@ const TimeseriesPage = ({
                 setDate(format(new Date(), "yyyy-MM-dd"));
                 setBody("");
                 setAddNoteIsOpen(false);
-            })
-            .catch((e) => console.log(e))
-            .finally(() => setIsLoading(false));
-    }
-
-    function onDelete(noteId: string) {
-        setIsLoading(true);
-        axios
-            .delete(`/api/note`, { data: { id: noteId } })
-            .then((res) => {
-                console.log(res.data.message);
-                setIter(iter + 1);
             })
             .catch((e) => console.log(e))
             .finally(() => setIsLoading(false));
@@ -133,30 +119,7 @@ const TimeseriesPage = ({
                     )}
                     {notesData && notesData.data ? (
                         notesData.data.length > 0 ? (
-                            notesData.data.map((note) => (
-                                <div className="mb-16" key={note._id}>
-                                    <ContextMenuTrigger id={note._id}>
-                                        <H2 className="text-center mb-4">{note.date}</H2>
-                                    </ContextMenuTrigger>
-                                    {isOwner && (
-                                        <ContextMenu
-                                            id={note._id}
-                                            className="bg-white rounded-md shadow-lg z-10 cursor-pointer"
-                                        >
-                                            <MenuItem
-                                                onClick={() => {
-                                                    onDelete(note._id);
-                                                }}
-                                                className="flex hover:bg-gray-50 p-4"
-                                            >
-                                                <FiTrash />
-                                                <span className="ml-2 -mt-0.5">Delete</span>
-                                            </MenuItem>
-                                        </ContextMenu>
-                                    )}
-                                    <pre>{note.body}</pre>
-                                </div>
-                            ))
+                            notesData.data.map((note) => <Note key={note._id} note={note} canDelete={isOwner} setIter={setIter} />)
                         ) : (
                             <p>No notes.</p>
                         )
@@ -190,10 +153,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                         pipeline: [
                             {
                                 $match: {
-                                    $and: [
-                                        { $expr: { $eq: ["$_id", "$$userId"] } },
-                                        { $expr: { $eq: ["$username", username] } },
-                                    ],
+                                    $and: [{ $expr: { $eq: ["$_id", "$$userId"] } }, { $expr: { $eq: ["$username", username] } }],
                                 },
                             },
                         ],

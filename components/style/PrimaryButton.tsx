@@ -1,5 +1,5 @@
 import { color } from "../../utils/utils";
-import Button, { ButtonProps } from "./Button";
+import Button, { ButtonProps } from "../headless/Button";
 
 const PrimaryButton = (props: ButtonProps) => {
     let newProps = { ...props };
