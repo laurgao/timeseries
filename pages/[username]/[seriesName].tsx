@@ -58,7 +58,7 @@ const TimeseriesPage = ({
     }
 
     useKey("KeyN", (e) => {
-        if (!addNoteIsOpen) {
+        if (!addNoteIsOpen && canEdit) {
             e.preventDefault();
             setAddNoteIsOpen(true);
             waitForEl("new-note-body");
