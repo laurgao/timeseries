@@ -20,7 +20,7 @@ export default function Button(props: ButtonProps) {
     return props.href ? (
         <Link href={props.href}>
             {/* @ts-ignore */}
-            <a {...newProps} className={classNames}>
+            <a {...newProps} className={classNames + " block"}>
                 <div className={childClassNames}>{props.children}</div>
                 {props.isLoading && <div className="up-spinner"/>}
             </a>

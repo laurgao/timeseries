@@ -2,11 +2,11 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
 import React, { useState } from "react";
-import { useToasts } from 'react-toast-notifications';
+import { FaLock } from "react-icons/fa";
+import { useToasts } from "react-toast-notifications";
 import Button from "../../components/headless/Button";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
-import H2 from "../../components/headless/H2";
 import Input from "../../components/headless/Input";
 import Select from "../../components/headless/Select";
 import NotionButton from "../../components/style/NotionButton";
@@ -107,14 +107,22 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
                     )}
                 </div>
             )}
-            <p className="font-bold text-gray-700 text-sm">All of {pageUser.name}'s Timeseries':</p>
+            <p className="font-bold text-gray-500 text-sm">All of {pageUser.name}'s Timeseries':</p>
             {pageUser.seriesArr.length > 0 ? (
-                pageUser.seriesArr.map((series) => (
-                    <Button key={series._id} href={`/${pageUser.username}/${series.title.toLowerCase()}`}>
-                        <H2>{series.title}</H2>
-                    </Button>
-                    // latest notes maybe?
-                ))
+                <div>
+                    {pageUser.seriesArr.map((series) => (
+                        <Button
+                            key={series._id}
+                            href={`/${pageUser.username}/${series.title.toLowerCase()}`}
+                            className="rounded-md hover:bg-gray-50 transition mb-2"
+                            childClassName="flex items-center"
+                        >
+                            <span className="text-lg font-medium">{series.title}</span>
+                            {series.privacy === "private" && <FaLock className="ml-2" />}
+                        </Button>
+                        // latest notes maybe?
+                    ))}
+                </div>
             ) : (
                 <p>No timeseries had been created... yet 😏</p>
             )}
@@ -126,7 +134,6 @@ export default UserProfilePage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    // if (!session) return {props: {user: null}}
 
     try {
         await dbConnect();
