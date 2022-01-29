@@ -92,10 +92,7 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         if (e.ctrlKey) onSubmit();
-                                    } else if (e.key === "Escape") {
-                                        setNewSeriesTitle(null);
-                                        setNewSeriesPrivacy("");
-                                    }
+                                    } else if (e.key === "Escape") reset();
                                 }}
                             />
                             {!disabled && <p className="text-gray-400 text-xs px-2 mt-2">Ctrl + Enter to submit</p>}
