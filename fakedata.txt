@@ -1,0 +1,9 @@
+const pageUser = {
+    username: "l",
+    name: "l l",
+    email: "f",
+    seriesArr: [
+        { title: "h", privacy: "private", _id: "1" },
+        { title: "f", privacy: "publicCanEdit", _id: "2" },
+    ],
+};

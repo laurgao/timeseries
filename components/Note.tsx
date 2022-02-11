@@ -1,11 +1,10 @@
 import axios from "axios";
-import Linkify from "linkify-react";
 import React, { Dispatch, SetStateAction } from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { FiTrash } from "react-icons/fi";
 import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
-import { color } from "../utils/utils";
 import H2 from "./headless/H2";
+import NoteBody from "./NoteBody";
 import A from "./style/A";
 
 const Note = ({
@@ -60,11 +59,7 @@ const Note = ({
                     </MenuItem>
                 </ContextMenu>
             )}
-            <div className="overflow-hidden break-words">
-                <Linkify tagName="pre" options={{ className: `text-${color}-500 underline` }}>
-                    {note.body}
-                </Linkify>
-            </div>
+            <NoteBody note={note} setIter={setIter} />
         </div>
     );
 };
