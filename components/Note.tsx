@@ -59,7 +59,7 @@ const Note = ({
                     </MenuItem>
                 </ContextMenu>
             )}
-            <NoteBody note={note} setIter={setIter} />
+            <NoteBody note={note} setIter={setIter} canEdit={canDelete} />
         </div>
     );
 };

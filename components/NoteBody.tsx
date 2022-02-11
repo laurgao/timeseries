@@ -6,7 +6,7 @@ import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
 import { color } from "../utils/utils";
 import Input from "./headless/Input";
 
-const NoteBody = ({ note, setIter }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, setIter?: Dispatch<SetStateAction<number>> }) => {
+const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, canEdit?: boolean, setIter?: Dispatch<SetStateAction<number>> }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [body, setBody] = useState<string>(note.body);
     // const [date, setDate] = useState<string>(format(new Date(note.date), "yyyy-MM-dd"));
@@ -37,9 +37,9 @@ const NoteBody = ({ note, setIter }: { note: DatedObj<NoteObj> | DatedObj<NoteOb
 
     return !isEdit ? (
         <div
-            className="overflow-hidden break-words cursor-pointer hover:bg-gray-50 p-2 rounded-md transition"
+            className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-2 rounded-md transition"}`}
             onClick={() => {
-                setIsEdit(true);
+                if (canEdit) setIsEdit(true);
             }}
         >
             <Linkify tagName="pre" options={{ className: `text-${color}-500 underline` }}>
