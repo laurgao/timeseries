@@ -46,16 +46,23 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
         }
     });
 
+    // useEffect(() => {
+    //     const cleanup = (e) => {
+    //         e.preventDefault();
+    //         return "Are you sure you want to exit? You have unsaved changes.";
+    //     }
+
+    //     window.addEventListener("beforeunload", cleanup);
+
+    //     return () => window.removeEventListener("beforeunload", cleanup);
+    // }, [addNoteIsOpen])
     useEffect(() => {
-        const cleanup = (e) => {
-            e.preventDefault();
-            return "Are you sure you want to exit? You have unsaved changes.";
-        }
+        window.onbeforeunload = () => true;
 
-        window.addEventListener("beforeunload", cleanup);
-
-        return () => window.removeEventListener("beforeunload", cleanup);
-    }, [addNoteIsOpen])
+        return () => {
+            window.onbeforeunload = undefined;
+        };
+    }, []);
 
     return (
         <>
