@@ -25,7 +25,7 @@ export default function Home(props: { user: DatedObj<UserObj> }) {
                 <>
                     <div className="mb-16 text-center">
                         <H1>Timeseries</H1>
-                        <p className="text-gray-400">The latest notes across the platform</p>
+                        <p className="text-gray-400">Click on a series to see how other people use them!</p>
                     </div>
                     {notesData && notesData.data ? (
                         notesData.data.length > 0 ? (

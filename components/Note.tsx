@@ -42,6 +42,12 @@ const Note = ({
                                 {/* @ts-ignore only will includesubtitle if type is noteobjgraph */}
                                 {note.series.title}
                             </A>
+                            {" "}
+                            by {/* @ts-ignore only will includesubtitle if type is noteobjgraph */}
+                            <A href={`/${note.series.user.username}`}>
+                                {/* @ts-ignore only will includesubtitle if type is noteobjgraph */}
+                                @{note.series.user.username}
+                            </A>
                         </p>
                     )}
                 </div>
