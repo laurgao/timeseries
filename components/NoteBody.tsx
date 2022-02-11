@@ -1,6 +1,6 @@
 import axios from "axios";
 import Linkify from "linkify-react";
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useReducer, useState } from 'react';
 import { useInterval } from "../utils/hooks";
 import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
 import { color } from "../utils/utils";
@@ -10,24 +10,36 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
     const [isEdit, setIsEdit] = useState(false);
     const [body, setBody] = useState<string>(note.body);
     // const [date, setDate] = useState<string>(format(new Date(note.date), "yyyy-MM-dd"));
-    const [isSaved, setIsSaved] = useState<boolean>(true);
-    const [interval, setInterval] = useState<number>(null);
+
+    function reducer(state, action) {
+        switch (action.type) {
+            case 'setIsSaved':
+                return { isSaved: true, interval: null };
+            case 'setIsNotSaved':
+                return { isSaved: false, interval: 1000 };
+            default:
+                throw new Error();
+        }
+    }
+    const [state, dispatch] = useReducer(reducer, { isSaved: true, interval: null });
+
 
     function saveNote(incrementIter?: boolean) {
-        if (!isSaved) {
+        if (!state.isSaved) {
             if (body.length > 0) {
                 axios.post(`/api/note`, { id: note._id, body: body }).then(() => {
-                    setInterval(null);
-                    setIsSaved(true);
+                    dispatch({ type: 'setIsSaved' });
                     if (incrementIter) setIter(prevIter => prevIter + 1);
                 });
             } else {
                 axios.delete(`/api/note`, { data: { id: note._id } }).then(() => {
-                    setInterval(null);
-                    setIsSaved(true);
+                    dispatch({ type: 'setIsSaved' });
                     if (incrementIter) setIter(prevIter => prevIter + 1);
                 });
             }
+        } else {
+            // Refresh the note data from mongodb if we press esc when the note is already saved.
+            if (incrementIter) setIter(prevIter => prevIter + 1);
         }
     }
 
@@ -37,11 +49,9 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
         }
         saveNote(true);
         setIsEdit(false);
-        setInterval(null);
-
     }
 
-    useInterval(saveNote, interval);
+    useInterval(saveNote, state.interval);
 
     return !isEdit ? (
         <div
@@ -63,8 +73,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
                 value={body}
                 onChange={(e) => {
                     setBody(e.target.value);
-                    setIsSaved(false);
-                    setInterval(1000);
+                    dispatch({ type: 'setIsNotSaved' });
                 }}
                 id="new-note-body"
                 placeholder="What were the most interesting events in today's news?"
@@ -79,7 +88,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
                     if (e.key === "Escape") onSetIsNotEdit();
                 }}
             />
-            <p className="text-gray-400 text-xs">{isSaved ? "Saved" : "Saving..."}</p>
+            <p className="text-gray-400 text-xs">{state.isSaved ? "Saved" : "Saving..."}</p>
         </div>
     )
 }
