@@ -13,24 +13,32 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
     const [isSaved, setIsSaved] = useState<boolean>(true);
     const [interval, setInterval] = useState<number>(null);
 
-    function saveNote() {
-        console.log("interval")
-        if (!isSaved && body.length > 0) {
-            axios.post(`/api/note`, { id: note._id, body: body }).then(() => {
-                setInterval(null);
-                setIsSaved(true);
-            });
+    function saveNote(incrementIter?: boolean) {
+        if (!isSaved) {
+            if (body.length > 0) {
+                axios.post(`/api/note`, { id: note._id, body: body }).then(() => {
+                    setInterval(null);
+                    setIsSaved(true);
+                    if (incrementIter) setIter(prevIter => prevIter + 1);
+                });
+            } else {
+                axios.delete(`/api/note`, { data: { id: note._id } }).then(() => {
+                    setInterval(null);
+                    setIsSaved(true);
+                    if (incrementIter) setIter(prevIter => prevIter + 1);
+                });
+            }
         }
     }
 
     function onSetIsNotEdit() {
-        saveNote();
         if (body.length === 0) {
             alert("Are you sure you want to delete this note?")
         }
+        saveNote(true);
         setIsEdit(false);
         setInterval(null);
-        setIter(prevIter => prevIter + 1);
+
     }
 
     useInterval(saveNote, interval);
@@ -47,26 +55,31 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
             </Linkify>
         </div>
     ) : (
-        <div className="mb-16">
-            {/* <Input type="date" value={date} setValue={setDate} className="my-8" /> */}
-            <div className="my-8">
-                <Input
-                    type="textarea"
-                    value={body}
-                    onChange={(e) => {
-                        setBody(e.target.value);
-                        setIsSaved(false);
-                        setInterval(1000);
-                    }}
-                    id="new-note-body"
-                    placeholder="What were the most interesting events in today's news?"
-                    autoFocus
-                    onKeyDown={(e) => {
-                        if (e.key === "Escape") onSetIsNotEdit();
-                    }}
-                />
-                <p className="text-gray-400 text-xs">{isSaved ? "Saved" : "Saving..."}</p>
-            </div>
+        /* <Input type="date" value={date} setValue={setDate} className="my-8" /> */
+        <div className="my-8">
+            <Input
+                onBlur={onSetIsNotEdit}
+                type="textarea"
+                value={body}
+                onChange={(e) => {
+                    setBody(e.target.value);
+                    setIsSaved(false);
+                    setInterval(1000);
+                }}
+                id="new-note-body"
+                placeholder="What were the most interesting events in today's news?"
+                autoFocus
+                onFocus={function (e) {
+                    // focus cursor to the end of text
+                    var val = e.target.value;
+                    e.target.value = '';
+                    e.target.value = val;
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === "Escape") onSetIsNotEdit();
+                }}
+            />
+            <p className="text-gray-400 text-xs">{isSaved ? "Saved" : "Saving..."}</p>
         </div>
     )
 }
