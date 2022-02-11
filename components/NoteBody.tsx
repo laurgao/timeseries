@@ -45,7 +45,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
 
     return !isEdit ? (
         <div
-            className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-2 rounded-md transition"}`}
+            className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-4 rounded-md transition"}`}
             onClick={() => {
                 if (canEdit) setIsEdit(true);
             }}
@@ -56,7 +56,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
         </div>
     ) : (
         /* <Input type="date" value={date} setValue={setDate} className="my-8" /> */
-        <div className="my-8">
+        <div>
             <Input
                 onBlur={onSetIsNotEdit}
                 type="textarea"
