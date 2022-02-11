@@ -44,6 +44,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
     }
 
     function onSetIsNotEdit() {
+        // Always call this function when want to call `setIsEdit(false)`
         if (body.length === 0) {
             alert("Are you sure you want to delete this note?")
         }
