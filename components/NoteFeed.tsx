@@ -1,6 +1,6 @@
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
 import fetcher from "../utils/fetcher";
@@ -45,6 +45,18 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
             waitForEl("new-note-body");
         }
     });
+
+    useEffect(() => {
+        const cleanup = (e) => {
+            e.preventDefault();
+            return "Are you sure you want to exit? You have unsaved changes.";
+        }
+
+        window.addEventListener("beforeunload", cleanup);
+
+        return window.removeEventListener("beforeunload", cleanup);
+    }, [addNoteIsOpen])
+
     return (
         <>
             {canEdit && !addNoteIsOpen && (
@@ -53,6 +65,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                         onClick={() => {
                             setAddNoteIsOpen(true);
                             waitForEl("new-note-body");
+                            // setDirty();
                         }}
                     >
                         New note (n)
