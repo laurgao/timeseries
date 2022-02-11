@@ -54,7 +54,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
 
         window.addEventListener("beforeunload", cleanup);
 
-        return window.removeEventListener("beforeunload", cleanup);
+        return () => window.removeEventListener("beforeunload", cleanup);
     }, [addNoteIsOpen])
 
     return (
@@ -65,7 +65,6 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                         onClick={() => {
                             setAddNoteIsOpen(true);
                             waitForEl("new-note-body");
-                            // setDirty();
                         }}
                     >
                         New note (n)
