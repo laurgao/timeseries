@@ -1,6 +1,6 @@
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
 import fetcher from "../utils/fetcher";
@@ -45,6 +45,15 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
             waitForEl("new-note-body");
         }
     });
+
+    useEffect(() => {
+        window.onbeforeunload = (addNoteIsOpen && body) ? () => true : undefined;
+
+        return () => {
+            window.onbeforeunload = undefined;
+        };
+    }, [addNoteIsOpen, !!body]);
+
     return (
         <>
             {canEdit && !addNoteIsOpen && (
