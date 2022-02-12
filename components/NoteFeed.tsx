@@ -12,7 +12,7 @@ import NotionButton from "./style/NotionButton";
 import PrimaryButton from "./style/PrimaryButton";
 
 const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { user: UserObj }>; isOwner: boolean }) => {
-    const canEdit = thisSeries.privacy === "publicCanEdit" || isOwner;
+    const canCreateNewNote = thisSeries.privacy === "publicCanEdit" || isOwner;
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
     const [body, setBody] = useState<string>("");
     const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
@@ -39,7 +39,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
     }
 
     useKey("KeyN", (e) => {
-        if (!addNoteIsOpen && canEdit) {
+        if (!addNoteIsOpen && canCreateNewNote) {
             e.preventDefault();
             setAddNoteIsOpen(true);
             waitForEl("new-note-body");
@@ -56,7 +56,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
 
     return (
         <>
-            {canEdit && !addNoteIsOpen && (
+            {canCreateNewNote && !addNoteIsOpen && (
                 <div className="my-4">
                     <NotionButton
                         onClick={() => {
@@ -95,7 +95,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
             )}
             {notesData && notesData.data ? (
                 notesData.data.length > 0 ? (
-                    notesData.data.map((note) => <Note key={note._id} note={note} canDelete={isOwner} setIter={setIter} />)
+                    notesData.data.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} />)
                 ) : (
                     <p>No notes.</p>
                 )

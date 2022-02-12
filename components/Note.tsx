@@ -9,12 +9,12 @@ import A from "./style/A";
 
 const Note = ({
     note,
-    canDelete,
+    canModifyExisting,
     setIter,
     includeSubtitle,
 }: {
     note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>;
-    canDelete?: boolean;
+    canModifyExisting?: boolean;
     setIter?: Dispatch<SetStateAction<number>>;
     includeSubtitle?: boolean;
 }) => {
@@ -52,7 +52,7 @@ const Note = ({
                     )}
                 </div>
             </ContextMenuTrigger>
-            {canDelete && (
+            {canModifyExisting && (
                 <ContextMenu id={note._id} className="bg-white rounded-md shadow-lg z-10 cursor-pointer">
                     <MenuItem
                         onClick={() => {
@@ -65,7 +65,7 @@ const Note = ({
                     </MenuItem>
                 </ContextMenu>
             )}
-            <NoteBody note={note} setIter={setIter} canEdit={canDelete} />
+            <NoteBody note={note} setIter={setIter} canEdit={canModifyExisting} />
         </div>
     );
 };
