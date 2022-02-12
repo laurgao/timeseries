@@ -37,7 +37,6 @@ jobs:
           
       - name: Bump Versions
         run: |
-          git switch -c master
           git config --global user.email "gaolauro@gmail.com"
           git config --global user.name "laurgao"
           npm version patch
