@@ -46,6 +46,6 @@ jobs:
           git config --global user.email "gaolauro@gmail.com"
           git config --global user.name "laurgao"
           npm version patch
-          echo steps.extract_branch.outputs.branch
-          git push HEAD:steps.extract_branch.outputs.branch
+          echo eng:${{ steps.extract_branch.outputs.branch }}
+          git push HEAD:eng:${{ steps.extract_branch.outputs.branch }}
 
