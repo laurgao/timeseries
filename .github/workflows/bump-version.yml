@@ -33,7 +33,7 @@ jobs:
               run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges test-auto-release ^${{steps.extract_version.outputs.version}}))"
               id: extract_commits
             - name: Bump Version
-              if: ${{ steps.extract_commits.outputs.commits == '' }}
+              if: ${{ steps.extract_commits.outputs.commits != '' }}
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
