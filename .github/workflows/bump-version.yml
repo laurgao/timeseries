@@ -30,7 +30,7 @@ jobs:
 
             - name: Get version
               shell: bash
-              run: echo "##[set-output name=version;]$(echo ${npm version from-git --allow-same-version})"
+              run: echo "##[set-output name=version;]$(echo ${npm version})"
               id: extract_version
 
             - name: Get commit messages
