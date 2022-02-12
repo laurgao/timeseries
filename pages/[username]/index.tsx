@@ -1,14 +1,14 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
-import React, { useState } from "react";
+import { ReactNode, useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { useToasts } from "react-toast-notifications";
+import Select from "../../components/BetterSelect";
 import Button from "../../components/headless/Button";
 import Container from "../../components/headless/Container";
 import H1 from "../../components/headless/H1";
 import Input from "../../components/headless/Input";
-import Select from "../../components/headless/Select";
 import NotionButton from "../../components/style/NotionButton";
 import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
@@ -17,16 +17,24 @@ import dbConnect from "../../utils/dbConnect";
 import showToast from "../../utils/showToast";
 import { DatedObj, PrivacyTypes, SeriesObj, UserObj } from "../../utils/types";
 
+
+
+const privacyOptions: { value: PrivacyTypes, label: string | ReactNode }[] = [
+    { value: "private", label: "Private" },
+    { value: "publicVisible", label: <span>Anyone who has the link can <b>view</b></span> },
+    { value: "publicCanEdit", label: <span>Anyone who has the link can <b>add new notes</b></span> },
+]
+
 const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & { seriesArr: DatedObj<SeriesObj>[] }; isOwner: boolean }) => {
     const [newSeriesTitle, setNewSeriesTitle] = useState<string>(null);
-    const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<PrivacyTypes | "">(""); // select's value should not be null
+    const [newSeriesPrivacy, setNewSeriesPrivacy] = useState<{ value: PrivacyTypes, label: any }>(privacyOptions[0]); // select's value should not be null
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const disabled = !newSeriesTitle || !newSeriesPrivacy || newSeriesTitle !== encodeURIComponent(newSeriesTitle);
 
     const reset = () => {
         setNewSeriesTitle(null);
-        setNewSeriesPrivacy("");
+        setNewSeriesPrivacy(privacyOptions[0]);
         setError("");
     };
 
@@ -35,7 +43,7 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
         if (disabled) return;
         setIsLoading(true);
         axios
-            .post("/api/series", { title: newSeriesTitle, user: pageUser._id, privacy: newSeriesPrivacy })
+            .post("/api/series", { title: newSeriesTitle, user: pageUser._id, privacy: newSeriesPrivacy.value })
             .then((res) => {
                 if (res.data.error) setError(res.data.error);
                 else {
@@ -79,25 +87,13 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
                                 autoFocus
                             />
                             <Select
-                                className="block"
-                                value={newSeriesPrivacy}
-                                default="Select privacy"
-                                // @ts-ignore properly value exists on e.target
-                                onChange={(e) => setNewSeriesPrivacy(e.target.value)}
-                                options={[
-                                    { value: "private", label: "Private" },
-                                    { value: "publicVisible", label: "Public (visible)" },
-                                    { value: "publicCanEdit", label: "Public (can edit)" },
-                                ]}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        if (e.ctrlKey) onSubmit();
-                                    } else if (e.key === "Escape") reset();
-                                }}
+                                selected={newSeriesPrivacy}
+                                setSelected={setNewSeriesPrivacy}
+                                options={privacyOptions}
                             />
                             {!disabled && <p className="text-gray-400 text-xs px-2 mt-2">Ctrl + Enter to submit</p>}
                             {error && <p className="text-red-500 font-bold mt-4 px-2">{error}</p>}
-                            <PrimaryButton className="mt-8 mb-16" onClick={onSubmit} disabled={disabled} isLoading={isLoading}>
+                            <PrimaryButton className="my-16" onClick={onSubmit} disabled={disabled} isLoading={isLoading}>
                                 Create new series
                             </PrimaryButton>
                         </>

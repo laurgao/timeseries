@@ -9,6 +9,8 @@
         "test": "next test"
     },
     "dependencies": {
+        "@headlessui/react": "^1.4.3",
+        "@heroicons/react": "^1.0.5",
         "@types/mongoose": "^5.11.97",
         "@types/next-auth": "^3.15.0",
         "@types/node": "^14.14.22",
