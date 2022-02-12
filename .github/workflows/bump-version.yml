@@ -6,7 +6,7 @@ name: Bump version
 
 # Controls when the workflow will run
 on:
-    # Triggers the workflow on push or pull request events but only for the master branch
+    # Triggers the workflow on push events but only for the master branch
     push:
         branches: [master, test-auto-release]
 
@@ -29,14 +29,9 @@ jobs:
                   fetch-depth: 0
                   ref: test-auto-release
 
-            # - name: Get version
-            #   shell: bash
-            #   run: echo "##[set-output name=version;]$(echo $(npm version))"
-            #   id: extract_version
-
             - name: Get version
               shell: bash
-              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
+              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag
               id: extract_version
 
             - name: Get commit messages
@@ -49,7 +44,8 @@ jobs:
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
                   echo "${{steps.extract_version.outputs.version}}"
-                  echo "${{steps.extract_commits.outputs.commits}}"
-                  echo $(git cherry -v master test-auto-release --abbrev=1)
-                  npm version patch -m "Bump version to %s"
+                  echo "${{"steps.extract_commits.outputs.commits"}}"
+                  npm version patch -m "Bump version to %s"  # The commit message
                   git push
+
+            - name: Publish release
