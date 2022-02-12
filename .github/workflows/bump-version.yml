@@ -76,8 +76,8 @@ jobs:
                   DATA: ${{steps.create_release_data.outputs.data}}
               run: |
                   echo ${BRANCH}
-                  echo $REPO_FULL_NAME
                   echo $VERSION
+                  echo $DATA
                   git config --global github.token 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
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl --data "$(DATA)" "https://api.github.com/repos/$REPO_FULL_NAME/releases?access_token=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"
+                  curl --data "$DATA" "https://api.github.com/repos/laurgao/timeseries/releases?access_token=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"
