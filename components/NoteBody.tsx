@@ -1,6 +1,6 @@
 import axios from "axios";
 import Linkify from "linkify-react";
-import { Dispatch, SetStateAction, useReducer, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useReducer, useState } from 'react';
 import { useInterval } from "../utils/hooks";
 import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
 import { color } from "../utils/utils";
@@ -53,6 +53,15 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
     }
 
     useInterval(saveNote, state.interval);
+
+    // Create alert if exit tab when it's not saved.
+    useEffect(() => {
+        window.onbeforeunload = (!state.isSaved) ? () => true : undefined;
+
+        return () => {
+            window.onbeforeunload = undefined;
+        };
+    }, [state.isSaved]);
 
     return !isEdit ? (
         <div
