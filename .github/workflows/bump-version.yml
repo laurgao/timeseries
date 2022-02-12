@@ -45,6 +45,6 @@ jobs:
                   git config --global user.name "laurgao"
                   echo "${{steps.extract_version.outputs.version}}"
                   echo "${{"steps.extract_commits.outputs.commits"}}"
-                  if [ -z ${steps.extract_commits.outputs.commits} ]; then echo "steps.extract_commits.outputs.commits is unset"; else echo "steps.extract_commits.outputs.commits is set to '$steps.extract_commits.outputs.commits'"; fi
+                  if [ -z ${{steps.extract_commits.outputs.commits}} ]; then echo "steps.extract_commits.outputs.commits is unset"; else echo "steps.extract_commits.outputs.commits is set to '$steps.extract_commits.outputs.commits'"; fi
                   npm version patch -m "Bump version to %s"  # The commit message
                   git push
