@@ -7,6 +7,8 @@ on:
     # Triggers the workflow on push events but only for the master branch
     push:
         branches: [master]
+    pull_request:
+        branches: [master]
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -17,6 +19,10 @@ jobs:
         runs-on: ubuntu-latest
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
+            # Delay the workflow run for a couple minutes so we have time to cancel it if we want to update a version by a minor
+            - name: Sleep
+              run: sleep 5m
+
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - name: Check out repo
               uses: actions/checkout@v2
