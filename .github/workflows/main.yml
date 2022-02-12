@@ -35,10 +35,16 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
           
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+          
       - name: Bump Versions
         run: |
           git config --global user.email "gaolauro@gmail.com"
           git config --global user.name "laurgao"
           npm version patch
-          git push
+          git push HEAD:steps.extract_branch.outputs.branch
 
