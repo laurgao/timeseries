@@ -1,6 +1,7 @@
-import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
-import { Dispatch, Fragment, ReactNode, SetStateAction } from 'react'
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { Dispatch, Fragment, ReactNode, SetStateAction } from 'react';
+import { color } from "../../utils/utils";
 
 export type Option = { value: any; label: string | ReactNode }
 export default function Select({ options, selected, setSelected }: { options: Option[], selected: Option, setSelected: Dispatch<SetStateAction<Option>> }) {
@@ -29,7 +30,7 @@ export default function Select({ options, selected, setSelected }: { options: Op
                                 <Listbox.Option
                                     key={option.value}
                                     className={({ active }) =>
-                                        `${active ? 'text-amber-900 bg-amber-100' : 'text-gray-900'}
+                                        `${active ? `text-${color}-900 bg-${color}-100` : 'text-gray-900'}
                           cursor-default select-none relative py-2 pl-10 pr-4`
                                     }
                                     value={option}
@@ -44,9 +45,7 @@ export default function Select({ options, selected, setSelected }: { options: Op
                                             </span>
                                             {selected ? (
                                                 <span
-                                                    className={`${active ? 'text-amber-600' : 'text-amber-600'
-                                                        }
-                                absolute inset-y-0 left-0 flex items-center pl-3`}
+                                                    className={`${active ? `text-${color}-600` : `text-${color}-600`} absolute inset-y-0 left-0 flex items-center pl-3`}
                                                 >
                                                     <CheckIcon className="w-5 h-5" aria-hidden="true" />
                                                 </span>

@@ -97,7 +97,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                 notesData.data.length > 0 ? (
                     notesData.data.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} />)
                 ) : (
-                    <p>No notes.</p>
+                    <p>No notes... yet 😏</p>
                 )
             ) : (
                 <Skeleton count={2} />
