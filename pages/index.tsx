@@ -10,12 +10,12 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    if (!session) return ssrRedirect("/auth/signin");
+    if (!session) return ssrRedirect("/auth/welcome");
 
     try {
         await dbConnect();
         const thisUser = await UserModel.findOne({ email: session.user.email });
-        return thisUser ? ssrRedirect(`/${thisUser.userName}`) : ssrRedirect("/auth/newaccount");
+        return thisUser ? ssrRedirect(`/${thisUser.username}`) : ssrRedirect("/auth/newaccount");
     } catch (e) {
         console.log(e);
         return { notFound: true };

@@ -13,7 +13,7 @@ const Select = ({ options, ...props }: SelectProps) => {
             </option>
             {options.map((o) => (
                 <option value={o.value} key={o.value} className={props.optionsClassName}>
-                    ksdjfkd<b>faskdjfksd</b>hi
+                    {o.label}
                 </option>
             ))}
         </select>
