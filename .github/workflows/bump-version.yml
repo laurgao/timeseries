@@ -26,8 +26,8 @@ jobs:
             - name: Check out repo
               uses: actions/checkout@v2
               with:
-                  ref: test-auto-release
                   fetch-depth: 0
+                  ref: test-auto-release
 
             - name: Get version
               shell: bash
