@@ -28,9 +28,14 @@ jobs:
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag (but not necessarily for this branch)
               id: extract_version
 
+            - name: Get branch
+              shell: bash
+              run: echo "##[set-output name=branch;]$(echo $(git rev-parse --abbrev-ref HEAD))"
+              id: extract_branch
+
             - name: Get commit messages
               shell: bash
-              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges test-auto-release ^${{steps.extract_version.outputs.version}}))"
+              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
               id: extract_commits
             - name: Bump Version
               # Only bump version if there isn't already a tag on the latest commit.
@@ -43,16 +48,21 @@ jobs:
                   npm version patch -m "Bump version to %s"  # The commit message
                   git push
 
+            - name: Get repo full name # laurgao/timeseries
+              shell: bash
+              run: echo "##[set-output name=branch;]$(echo $(git rev-parse --abbrev-ref HEAD))"
+              id: extract_branch
+
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
               env:
-                  BRANCH: $(git rev-parse --abbrev-ref HEAD)
+                  BRANCH: ${{steps.extract_branch.outputs.branch}}
+                  REPO_FULL_NAME: ${{steps.extract_branch.outputs.branch}}
               run: |
                   echo ${BRANCH}
-                  repo_full_name=$(git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//')
                   token=$(git config --global github.token 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)
                   text=${{steps.extract_commits.outputs.commits}}
                   version=$(git describe --tags --abbrev=0)
-                  generate_post_data() { "tag_name": "$version", "target_commitish": "$branch", "name": "$version", "body": "$text", "draft": false,"prerelease": false }
-                  echo "Create release $version for repo: $repo_full_name branch: $branch"
-                  curl --data "$(generate_post_data)" "https://api.github.com/repos/$repo_full_name/releases?access_token=$token"
+                  generate_post_data() { "tag_name": "$version", "target_commitish": "${BRANCH}", "name": "$version", "body": "$text", "draft": false,"prerelease": false }
+                  echo "Create release $version for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
+                  curl --data "$(generate_post_data)" "https://api.github.com/repos/$REPO_FULL_NAME/releases?access_token=$token"
