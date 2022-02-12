@@ -81,4 +81,4 @@ jobs:
                   echo $DATA
                   git config --global github.token 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
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl --data "$DATA" -H 'Authorization: token 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' "https://api.github.com/repos/$REPO_FULL_NAME/releases"
+                  curl --data "$DATA" -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/$REPO_FULL_NAME/releases"
