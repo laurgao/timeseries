@@ -65,7 +65,7 @@ jobs:
                   REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
                   VERSION: ${{steps.extract_bumped_version.outputs.version}}
               run: |
-                  echo '##[set-output name=data;]{ "tag_name": "$version", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
+                  echo '##[set-output name=data;]{ "tag_name": "$VERSION", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
               id: create_release_data
 
             - name: Publish release
@@ -78,4 +78,4 @@ jobs:
               run: |
                   echo $DATA
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/$REPO_FULL_NAME/releases" -d "$DATA"
+                  curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/$REPO_FULL_NAME/releases" -d '{ "tag_name": "$VERSION", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
