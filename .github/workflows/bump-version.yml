@@ -80,4 +80,4 @@ jobs:
                   echo $VERSION
                   echo $DATA
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token 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" "https://api.github.com/repos/$REPO_FULL_NAME/releases" -d "$DATA"
+                  curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token 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" "https://api.github.com/repos/$REPO_FULL_NAME/releases" -d "$DATA"
