@@ -25,16 +25,22 @@ jobs:
               with:
                   ref: master
 
-            - name: Get commit history
+            - name: Get version
               shell: bash
               run: echo "##[set-output name=version;]$(echo ${npm version from-git --allow-same-version})"
               id: extract_version
+
+            - name: Get version
+              shell: bash
+              run: echo "##[set-output name=commits;]$(echo ${git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}}})"
+              id: extract_commits
 
             - name: Bump Version
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
-                  echo commit history: (git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}})
+                  echo version: ${{steps.extract_version.outputs.version}}
+                  echo commit history: ${{steps.extract_commits.outputs.commits}}
                   npm version patch -m "Bump version to %s"
                   git push
                   git push --tags
