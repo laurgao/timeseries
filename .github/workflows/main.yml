@@ -43,8 +43,9 @@ jobs:
           
       - name: Bump Versions
         run: |
+          git checkout test-workflows
           git config --global user.email "gaolauro@gmail.com"
           git config --global user.name "laurgao"
           npm version patch
-          git push origin test-workflows
+          git push
 
