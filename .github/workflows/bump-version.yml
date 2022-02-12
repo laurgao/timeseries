@@ -4,32 +4,37 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
+    # Triggers the workflow on push or pull request events but only for the master branch
+    push:
+        branches: [master]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    # This workflow contains a single job called "build"
+    build:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-        with:
-          ref: master
-          
-      - name: Bump Version
-        run: |
-          git config --global user.email "gaolauro@gmail.com"
-          git config --global user.name "laurgao"
-          npm version patch
-          git push
-          git push --tags
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            - uses: actions/checkout@v2
+              with:
+                  ref: master
 
+            - name: Get commit history
+              shell: bash
+              run: echo "##[set-output name=version;]$(echo ${npm version from-git --allow-same-version})"
+              id: extract_version
+
+            - name: Bump Version
+              run: |
+                  git config --global user.email "gaolauro@gmail.com"
+                  git config --global user.name "laurgao"
+                  echo commit history: (git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}})
+                  npm version patch -m "Bump version to %s"
+                  git push
+                  git push --tags
