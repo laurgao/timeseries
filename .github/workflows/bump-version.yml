@@ -31,12 +31,12 @@ jobs:
 
             - name: Get version
               shell: bash
-              run: echo "##[set-output name=version;]$(echo ${npm version})"
+              run: echo "##[set-output name=version;]$(echo $(npm version))"
               id: extract_version
 
             - name: Get commit messages
               shell: bash
-              run: echo "##[set-output name=commits;]$(echo ${git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}}})"
+              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}}))"
               id: extract_commits
 
             - name: Bump Version
