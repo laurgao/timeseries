@@ -1,35 +1,85 @@
 # This workflow bumps version and creates new tag on each push to master.
-
-name: CI
-
+# Before editing this, temp get rid of pushing to master (change ref of Check out repo to ur branch name)
+# Also, delete `git push --tags` to prevent accidentally pushing extra tags.
+name: Bump version
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
+    # Triggers the workflow on push events but only for the master branch
+    push:
+        branches: [master]
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    # This workflow contains a single job called "build"
+    build:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            - name: Check out repo
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+                  ref: master
+            - name: Get version
+              shell: bash
+              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag (but not necessarily for this branch)
+              id: extract_version
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-        with:
-          ref: master
-          
-      - name: Bump Version
-        run: |
-          git config --global user.email "gaolauro@gmail.com"
-          git config --global user.name "laurgao"
-          npm version patch
-          git push
-          git push --tags
+            - name: Get branch
+              shell: bash
+              run: echo "##[set-output name=branch;]$(echo $(git rev-parse --abbrev-ref HEAD))"
+              id: extract_branch
 
+            - name: Get commit messages
+              shell: bash
+              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
+              id: extract_commits
+            - name: Bump Version
+              # Only bump version if there isn't already a tag on the latest commit.
+              if: ${{ steps.extract_commits.outputs.commits != '' }}
+              run: |
+                  git config --global user.email "gaolauro@gmail.com"
+                  git config --global user.name "laurgao"
+                  echo "${{steps.extract_version.outputs.version}}"
+                  echo "${{steps.extract_commits.outputs.commits}}"
+                  npm version patch -m "Bump version to %s"  # The commit message
+                  git push
+                  git push --tags
+
+            - name: Get repo full name # laurgao/timeseries
+              shell: bash
+              run: echo "##[set-output name=repo;]$(echo $(git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//'))"
+              id: extract_repo
+
+            - name: Get bumped version
+              shell: bash
+              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
+              id: extract_bumped_version
+
+            - name: Publish release
+              if: ${{ steps.extract_commits.outputs.commits != '' }}
+              env:
+                  BRANCH: ${{steps.extract_branch.outputs.branch}}
+                  REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
+                  VERSION: ${{steps.extract_bumped_version.outputs.version}}
+                  DATA: ${{steps.create_release_data.outputs.data}}
+              run: |
+                  # echo $DATA
+                  generate_post_data()
+                  {
+                    cat <<EOF
+                  {
+                    "tag_name": "$VERSION",
+                    "target_commitish": "$BRANCH",
+                    "name": "$VERSION",
+                    "body": "${{steps.extract_commits.outputs.commits}}",
+                    "draft": false,
+                    "prerelease": false
+                  }
+                  EOF
+                  }
+                  echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
+                  curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/$REPO_FULL_NAME/releases" -d "$(generate_post_data)"
