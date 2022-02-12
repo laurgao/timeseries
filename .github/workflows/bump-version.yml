@@ -78,6 +78,6 @@ jobs:
                   echo ${BRANCH}
                   echo $VERSION
                   echo $DATA
-                  git config --global github.token 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
+                  git config --global github.token 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
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl --data "$DATA" -H 'Authorization: token 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' "https://api.github.com/repos/$REPO_FULL_NAME/releases"
+                  curl --data "$DATA" -H 'Authorization: token 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' "https://api.github.com/repos/$REPO_FULL_NAME/releases"
