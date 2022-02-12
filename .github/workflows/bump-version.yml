@@ -53,16 +53,20 @@ jobs:
               run: echo "##[set-output name=repo;]$(echo $(git rev-parse --abbrev-ref HEAD))"
               id: extract_repo
 
+            - name: Get bumped version # laurgao/timeseries
+              shell: bash
+              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
+              id: extract_bumped_version
+
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
               env:
                   BRANCH: ${{steps.extract_branch.outputs.branch}}
                   REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
+                  VERSION: ${{steps.extract_bumped_version.outputs.version}}
               run: |
                   echo ${BRANCH}
-                  token=$(git config --global github.token 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)
-                  text=${{steps.extract_commits.outputs.commits}}
-                  version=$(git describe --tags --abbrev=0)
-                  generate_post_data() { "tag_name": "$version", "target_commitish": "${BRANCH}", "name": "$version", "body": "$text", "draft": false,"prerelease": false }
-                  echo "Create release $version for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
-                  curl --data "$(generate_post_data)" "https://api.github.com/repos/$REPO_FULL_NAME/releases?access_token=$token"
+                  git config --global github.token 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
+                  generate_post_data() { "tag_name": "$version", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }
+                  echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
+                  curl --data "$(generate_post_data)" "https://api.github.com/repos/$REPO_FULL_NAME/releases?access_token=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"
