@@ -59,14 +59,14 @@ jobs:
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
               id: extract_bumped_version
 
-            - name: Get post data
-              env:
-                  BRANCH: ${{steps.extract_branch.outputs.branch}}
-                  REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
-                  VERSION: ${{steps.extract_bumped_version.outputs.version}}
-              run: |
-                  echo '##[set-output name=data;]{ "tag_name": "$VERSION", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
-              id: create_release_data
+            # - name: Get post data
+            #   env:
+            #       BRANCH: ${{steps.extract_branch.outputs.branch}}
+            #       REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
+            #       VERSION: ${{steps.extract_bumped_version.outputs.version}}
+            #   run: |
+            #       echo '##[set-output name=data;]{ "tag_name": "$VERSION", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
+            #   id: create_release_data
 
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
