@@ -42,7 +42,7 @@ jobs:
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
-                  echo ${{steps.extract_version.outputs.version}}
-                  echo ${{steps.extract_commits.outputs.commits}}
+                  echo "${{steps.extract_version.outputs.version}}"
+                  echo "${{steps.extract_commits.outputs.commits}}""
                   npm version patch -m "Bump version to %s"
                   git push
