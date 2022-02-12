@@ -45,9 +45,10 @@ jobs:
 
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
+              env:
+                  BRANCH: ${{ git rev-parse --abbrev-ref HEAD }}
               run: |
-                  echo $(git rev-parse --abbrev-ref HEAD)
-                  branch=$(git rev-parse --abbrev-ref HEAD)
+                  echo ${BRANCH}
                   repo_full_name=$(git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//')
                   token=$(git config --global github.token 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)
                   text=${{steps.extract_commits.outputs.commits}}
