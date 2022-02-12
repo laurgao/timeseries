@@ -31,4 +31,5 @@ jobs:
           git config --global user.name "laurgao"
           npm version patch
           git push
+          git push --tags
 
