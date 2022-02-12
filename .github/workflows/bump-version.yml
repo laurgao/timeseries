@@ -22,7 +22,7 @@ jobs:
               uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-                  ref: test-auto-release
+                  ref: master
             - name: Get version
               shell: bash
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag
