@@ -2,7 +2,7 @@
 # Before editing this, temp get rid of pushing to master (change ref of Check out repo to ur branch name)
 # Also, delete `git push --tags` to prevent accidentally pushing extra tags.
 
-name: CI
+name: Bump version
 
 # Controls when the workflow will run
 on:
@@ -36,7 +36,7 @@ jobs:
 
             - name: Get commit messages
               shell: bash
-              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges test-git ^${{steps.extract_version.outputs.version}}))"
+              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges test-auto-release ^${{steps.extract_version.outputs.version}}))"
               id: extract_commits
 
             - name: Bump Version
