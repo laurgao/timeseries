@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, test-workflows ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, test-workflows ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -39,6 +39,3 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: remorses/bump-version@bcb347631544a8b9b146bf5de4548376c1f71661
         uses: remorses/bump-version@v8
-        with:
-          # Version file to bump path
-          version_file: package.json # optional, default is VERSION
