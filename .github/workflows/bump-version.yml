@@ -29,9 +29,14 @@ jobs:
                   fetch-depth: 0
                   ref: test-auto-release
 
+            # - name: Get version
+            #   shell: bash
+            #   run: echo "##[set-output name=version;]$(echo $(npm version))"
+            #   id: extract_version
+
             - name: Get version
               shell: bash
-              run: echo "##[set-output name=version;]$(echo $(npm version))"
+              run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
               id: extract_version
 
             - name: Get commit messages
@@ -45,7 +50,6 @@ jobs:
                   git config --global user.name "laurgao"
                   echo "${{steps.extract_version.outputs.version}}"
                   echo "${{steps.extract_commits.outputs.commits}}"
-                  echo $(npm version)
-                  echo $(git cherry -v master test-auto-release)
+                  echo $(git cherry -v master test-auto-release --abbrev=1)
                   npm version patch -m "Bump version to %s"
                   git push
