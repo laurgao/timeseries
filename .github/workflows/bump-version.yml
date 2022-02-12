@@ -44,6 +44,6 @@ jobs:
                   git config --global user.name "laurgao"
                   echo "${{steps.extract_version.outputs.version}}"
                   echo "${{steps.extract_commits.outputs.commits}}"
-                  echo npm version from-git --allow-same-version
+                  echo $(npm version from-git --allow-same-version)
                   npm version patch -m "Bump version to %s"
                   git push
