@@ -6,7 +6,7 @@ name: Bump version
 on:
     # Triggers the workflow on push events but only for the master branch
     push:
-        branches: [master, test-auto-release]
+        branches: [master]
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -22,7 +22,7 @@ jobs:
               uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-                  ref: test-auto-release
+                  ref: master
             - name: Get version
               shell: bash
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag (but not necessarily for this branch)
@@ -54,19 +54,10 @@ jobs:
               run: echo "##[set-output name=repo;]$(echo $(git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//'))"
               id: extract_repo
 
-            - name: Get bumped version # laurgao/timeseries
+            - name: Get bumped version
               shell: bash
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))"
               id: extract_bumped_version
-
-            # - name: Get post data
-            #   env:
-            #       BRANCH: ${{steps.extract_branch.outputs.branch}}
-            #       REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
-            #       VERSION: ${{steps.extract_bumped_version.outputs.version}}
-            #   run: |
-            #       echo '##[set-output name=data;]{ "tag_name": "$VERSION", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }'
-            #   id: create_release_data
 
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
