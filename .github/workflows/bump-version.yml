@@ -50,14 +50,14 @@ jobs:
 
             - name: Get repo full name # laurgao/timeseries
               shell: bash
-              run: echo "##[set-output name=branch;]$(echo $(git rev-parse --abbrev-ref HEAD))"
-              id: extract_branch
+              run: echo "##[set-output name=repo;]$(echo $(git rev-parse --abbrev-ref HEAD))"
+              id: extract_repo
 
             - name: Publish release
               if: ${{ steps.extract_commits.outputs.commits != '' }}
               env:
                   BRANCH: ${{steps.extract_branch.outputs.branch}}
-                  REPO_FULL_NAME: ${{steps.extract_branch.outputs.branch}}
+                  REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
               run: |
                   echo ${BRANCH}
                   token=$(git config --global github.token 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)
