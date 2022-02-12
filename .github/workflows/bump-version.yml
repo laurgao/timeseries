@@ -1,4 +1,6 @@
 # This workflow bumps version and creates new tag on each push to master.
+# Before editing this, temp get rid of pushing to master (change ref of Check out repo to ur branch name)
+# Also, delete `git push --tags` to prevent accidentally pushing extra tags.
 
 name: CI
 
@@ -21,7 +23,8 @@ jobs:
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@v2
+            - name: Check out repo
+              uses: actions/checkout@v2
               with:
                   ref: test-auto-release
 
@@ -39,7 +42,7 @@ jobs:
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
-                  echo version: $steps.extract_version.outputs.version
-                  echo commit history: ${{steps.extract_commits.outputs.commits}}
+                  echo ${{steps.extract_version.outputs.version}}
+                  echo ${{steps.extract_commits.outputs.commits}}
                   npm version patch -m "Bump version to %s"
                   git push
