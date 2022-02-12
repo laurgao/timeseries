@@ -66,6 +66,8 @@ jobs:
                   VERSION: ${{steps.extract_bumped_version.outputs.version}}
               run: |
                   echo ${BRANCH}
+                  echo $REPO_FULL_NAME
+                  echo $VERSION
                   git config --global github.token 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
                   generate_post_data() { "tag_name": "$version", "target_commitish": "${BRANCH}", "name": "$VERSION", "body": "${{steps.extract_commits.outputs.commits}}", "draft": false,"prerelease": false }
                   echo "Create release $VERSION for repo: ${REPO_FULL_NAME} branch: ${BRANCH}"
