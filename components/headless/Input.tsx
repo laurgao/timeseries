@@ -9,8 +9,7 @@ type InputProps = (React.HTMLProps<HTMLInputElement>) & {
 
 const Input = (props: InputProps) => {
     let newProps = { ...props };
-    // @ts-ignore property value exists on e.target
-    if (newProps.setValue) newProps.onChange = (e) => props.setValue(e.target.value);
+    if (newProps.setValue) newProps.onChange = (e) => props.setValue((e.target as HTMLInputElement).value);
     newProps.className = props.childClassName + " border-b w-full my-2 py-2"
     delete newProps.childClassName;
     delete newProps.name;

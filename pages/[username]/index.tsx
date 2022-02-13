@@ -71,8 +71,9 @@ const UserProfilePage = ({ pageUser, isOwner }: { pageUser: DatedObj<UserObj> & 
                             <Input
                                 value={newSeriesTitle}
                                 onChange={(e) => {
-                                    setNewSeriesTitle(e.target.value);
-                                    if (e.target.value !== encodeURIComponent(e.target.value)) {
+                                    const target = e.target as HTMLInputElement
+                                    setNewSeriesTitle(target.value);
+                                    if (target.value !== encodeURIComponent(target.value)) {
                                         setError("Title cannot contain spaces or special characters.");
                                     } else setError(null);
                                 }}

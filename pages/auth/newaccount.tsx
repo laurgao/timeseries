@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -14,7 +15,7 @@ import PrimaryButton from "../../components/style/PrimaryButton";
 import { UserModel } from "../../models/User";
 import dbConnect from "../../utils/dbConnect";
 
-export default function SignIn({}: {}) {
+export default function SignIn({ }: {}) {
     const router = useRouter();
     const [session, loading] = useSession();
     const [username, setUsername] = useState<string>("");
@@ -54,7 +55,7 @@ export default function SignIn({}: {}) {
                         <Skeleton count={2} />
                     ) : (
                         <div className="flex items-center text-left">
-                            <img src={session.user.image} alt={`Profile picture of ${session.user.name}`} className="rounded-full h-12 mr-4" />
+                            <Image src={session.user.image} alt={`Profile picture of ${session.user.name}`} className="rounded-full mr-4" height={48} width={48} />
                             <div>
                                 <p>{session.user.name}</p>
                                 <p>{session.user.email}</p>
@@ -68,8 +69,9 @@ export default function SignIn({}: {}) {
                             type="text"
                             value={username}
                             onChange={(e) => {
-                                setUsername(e.target.value);
-                                if (e.target.value !== encodeURIComponent(e.target.value)) {
+                                const target = e.target as HTMLInputElement
+                                setUsername(target.value);
+                                if (target.value !== encodeURIComponent(target.value)) {
                                     setError("URLs cannot contain spaces or special characters.");
                                 }
                                 setError(null);
