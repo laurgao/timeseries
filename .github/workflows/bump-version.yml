@@ -70,9 +70,9 @@ jobs:
                   BRANCH: ${{steps.extract_branch.outputs.branch}}
                   REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
                   VERSION: ${{steps.extract_bumped_version.outputs.version}}
-                  DATA: ${{steps.create_release_data.outputs.data}}
               run: |
-                  # echo $DATA
+                  # echo ${{steps.extract_commits.outputs.commits}}
+                  # echo "${{steps.extract_commits.outputs.commits}}"
                   generate_post_data()
                   {
                     cat <<EOF
