@@ -39,7 +39,8 @@ jobs:
 
             - name: Get commit messages
               shell: bash
-              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
+              # run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
+              run: echo "##[set-output name=commits;]$(echo $(git cherry -v ${{steps.extract_version.outputs.version}} ${{steps.extract_branch.outputs.branch}} --abbrev=1))"
               id: extract_commits
             - name: Bump Version
               # Only bump version if there isn't already a tag on the latest commit.
