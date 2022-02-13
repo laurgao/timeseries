@@ -18,10 +18,17 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
     const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
     const [iter, setIter] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [latestNotes, setLatestNotes] = useState<DatedObj<NoteObj>[]>();
     const { data: notesData, error: notesError }: SWRResponse<{ data: DatedObj<NoteObj>[] }, any> = useSWR(
         `/api/note?seriesId=${thisSeries._id}&iter=${iter}`,
         fetcher
     );
+
+    // Store the latest notes array so that the notes stay rendered between refreshes
+    useEffect(() => {
+        if (notesData && notesData.data) setLatestNotes(notesData.data);
+    }, [notesData])
+
 
     function onSubmit() {
         setIsLoading(true);
@@ -52,7 +59,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
         return () => {
             window.onbeforeunload = undefined;
         };
-    }, [addNoteIsOpen, !!body]);
+    }, [addNoteIsOpen, body]);
 
     return (
         <>
@@ -93,9 +100,9 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                     </PrimaryButton>
                 </div>
             )}
-            {notesData && notesData.data ? (
-                notesData.data.length > 0 ? (
-                    notesData.data.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} />)
+            {latestNotes ? (
+                latestNotes.length > 0 ? (
+                    latestNotes.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} />)
                 ) : (
                     <p>No notes... yet 😏</p>
                 )
