@@ -55,8 +55,14 @@ export default function SignIn({ }: {}) {
                         <Skeleton count={2} />
                     ) : (
                         <div className="flex items-center text-left">
-                            <Image src={session.user.image} alt={`Profile picture of ${session.user.name}`} className="rounded-full mr-4" height={48} width={48} />
-                            <div>
+                            <Image
+                                src={session.user.image}
+                                alt={`Profile picture of ${session.user.name}`}
+                                className="rounded-full"
+                                height={48}
+                                width={48}
+                            />
+                            <div className="ml-4">
                                 <p>{session.user.name}</p>
                                 <p>{session.user.email}</p>
                             </div>
