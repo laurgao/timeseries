@@ -6,7 +6,7 @@ name: Bump version
 on:
     # Triggers the workflow on push events but only for the master branch
     push:
-        branches: [master, git-cherry]
+        branches: [master]
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -19,14 +19,14 @@ jobs:
         steps:
             # Delay the workflow run for a couple minutes so we have time to cancel it if we want to update a version by a minor
             - name: Sleep
-              run: sleep 1
+              run: sleep 5m
 
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - name: Check out repo
               uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-                  ref: git-cherry
+                  ref: master
             - name: Get version
               shell: bash
               run: echo "##[set-output name=version;]$(echo $(git describe --tags --abbrev=0))" # Last created tag (but not necessarily for this branch)
@@ -48,8 +48,6 @@ jobs:
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
-                  echo "${{steps.extract_version.outputs.version}}"
-                  echo "${{steps.extract_commits.outputs.commits}}"
                   npm version patch -m "Bump version to %s"  # The commit message
                   git push
                   git push --tags
@@ -71,8 +69,6 @@ jobs:
                   REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
                   VERSION: ${{steps.extract_bumped_version.outputs.version}}
               run: |
-                  # echo ${{steps.extract_commits.outputs.commits}}
-                  # echo "${{steps.extract_commits.outputs.commits}}"
                   generate_post_data()
                   {
                     cat <<EOF
