@@ -39,7 +39,8 @@ jobs:
 
             - name: Get commit messages
               shell: bash
-              run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
+              # run: echo "##[set-output name=commits;]$(echo $(git log --format=%B --reverse --no-merges ${{steps.extract_branch.outputs.branch}} ^${{steps.extract_version.outputs.version}}))"
+              run: echo "##[set-output name=commits;]$(echo $(git cherry -v ${{steps.extract_version.outputs.version}} ${{steps.extract_branch.outputs.branch}} --abbrev=1))"
               id: extract_commits
             - name: Bump Version
               # Only bump version if there isn't already a tag on the latest commit.
@@ -47,8 +48,6 @@ jobs:
               run: |
                   git config --global user.email "gaolauro@gmail.com"
                   git config --global user.name "laurgao"
-                  echo "${{steps.extract_version.outputs.version}}"
-                  echo "${{steps.extract_commits.outputs.commits}}"
                   npm version patch -m "Bump version to %s"  # The commit message
                   git push
                   git push --tags
@@ -69,9 +68,7 @@ jobs:
                   BRANCH: ${{steps.extract_branch.outputs.branch}}
                   REPO_FULL_NAME: ${{steps.extract_repo.outputs.repo}}
                   VERSION: ${{steps.extract_bumped_version.outputs.version}}
-                  DATA: ${{steps.create_release_data.outputs.data}}
               run: |
-                  # echo $DATA
                   generate_post_data()
                   {
                     cat <<EOF
