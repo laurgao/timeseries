@@ -1,3 +1,4 @@
+import { BadgeCheckIcon } from '@heroicons/react/outline';
 import axios from "axios";
 import Linkify from "linkify-react";
 import { Dispatch, SetStateAction, useEffect, useReducer, useState } from 'react';
@@ -6,6 +7,7 @@ import { waitForEl } from "../utils/key";
 import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
 import { color } from "../utils/utils";
 import AutoresizingTextarea from "./headless/AutoresizingTextarea";
+
 
 const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, canEdit?: boolean, setIter?: Dispatch<SetStateAction<number>> }) => {
     const [isEdit, setIsEdit] = useState(false);
@@ -25,22 +27,22 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
     const [state, dispatch] = useReducer(reducer, { isSaved: true, interval: null });
 
 
-    function saveNote(incrementIter?: boolean) {
+    function saveNote() {
         if (!state.isSaved) {
             if (body.length > 0) {
                 axios.post(`/api/note`, { id: note._id, body: body }).then(() => {
                     dispatch({ type: 'setIsSaved' });
-                    if (incrementIter) setIter(prevIter => prevIter + 1);
+                    setIter(prevIter => prevIter + 1);
                 });
             } else {
                 axios.delete(`/api/note`, { data: { id: note._id } }).then(() => {
                     dispatch({ type: 'setIsSaved' });
-                    if (incrementIter) setIter(prevIter => prevIter + 1);
+                    setIter(prevIter => prevIter + 1);
                 });
             }
         } else {
             // Refresh the note data from mongodb if we press esc when the note is already saved.
-            if (incrementIter) setIter(prevIter => prevIter + 1);
+            setIter(prevIter => prevIter + 1);
         }
     }
 
@@ -49,7 +51,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
         if (body.length === 0) {
             alert("Are you sure you want to delete this note?")
         }
-        saveNote(true);
+        saveNote();
         setIsEdit(false);
     }
 
@@ -95,7 +97,9 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
                     if (e.key === "Escape") onSetIsNotEdit();
                 }}
             />
-            <p className="text-gray-400 text-xs">{state.isSaved ? "Saved" : "Saving..."}</p>
+            <div className="text-gray-400 text-xs flex items-center">{body === note.body ? (
+                <><span className="leading-none">All changes updated</span><BadgeCheckIcon className="w-4 h-4 ml-2" /></>
+            ) : state.isSaved ? "Saved" : "Saving..."}</div>
         </div>
     )
 }
