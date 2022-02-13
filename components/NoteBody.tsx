@@ -2,9 +2,10 @@ import axios from "axios";
 import Linkify from "linkify-react";
 import { Dispatch, SetStateAction, useEffect, useReducer, useState } from 'react';
 import { useInterval } from "../utils/hooks";
+import { waitForEl } from "../utils/key";
 import { DatedObj, NoteObj, NoteObjGraph } from "../utils/types";
 import { color } from "../utils/utils";
-import Input from "./headless/Input";
+import AutoresizingTextarea from "./headless/AutoresizingTextarea";
 
 const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, canEdit?: boolean, setIter?: Dispatch<SetStateAction<number>> }) => {
     const [isEdit, setIsEdit] = useState(false);
@@ -67,33 +68,29 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
         <div
             className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-4 rounded-md transition"}`}
             onClick={() => {
-                if (canEdit) setIsEdit(true);
+                if (canEdit) {
+                    setIsEdit(true);
+                    waitForEl(`${note._id}-note-body`);
+                };
             }}
         >
             <Linkify tagName="pre" options={{ className: `text-${color}-500 underline` }}>
-                {note.body}
+                {body}
             </Linkify>
         </div>
     ) : (
         /* <Input type="date" value={date} setValue={setDate} className="my-8" /> */
         <div>
-            <Input
+            <AutoresizingTextarea
                 onBlur={onSetIsNotEdit}
                 type="textarea"
                 value={body}
                 onChange={(e) => {
-                    setBody(e.target.value);
+                    setBody(e.target.innerText);
                     dispatch({ type: 'setIsNotSaved' });
                 }}
-                id="new-note-body"
+                id={`${note._id}-note-body`}
                 placeholder="What were the most interesting events in today's news?"
-                autoFocus
-                onFocus={function (e) {
-                    // focus cursor to the end of text
-                    var val = e.target.value;
-                    e.target.value = '';
-                    e.target.value = val;
-                }}
                 onKeyDown={(e) => {
                     if (e.key === "Escape") onSetIsNotEdit();
                 }}

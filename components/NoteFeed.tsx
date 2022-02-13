@@ -6,6 +6,7 @@ import useSWR, { SWRResponse } from "swr";
 import fetcher from "../utils/fetcher";
 import useKey, { waitForEl } from "../utils/key";
 import { DatedObj, NoteObj, SeriesObj, UserObj } from "../utils/types";
+import AutoresizingTextarea from "./headless/AutoresizingTextarea";
 import Input from "./headless/Input";
 import Note from "./Note";
 import NotionButton from "./style/NotionButton";
@@ -79,8 +80,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                 <div className="mb-16">
                     <Input type="date" value={date} setValue={setDate} className="my-8" />
                     <div className="my-8">
-                        <Input
-                            type="textarea"
+                        <AutoresizingTextarea
                             value={body}
                             setValue={setBody}
                             id="new-note-body"
