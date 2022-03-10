@@ -69,7 +69,7 @@ const NoteBody = ({ note, setIter, canEdit, toggleDisallowNShortcut }: { note: D
 
     return !isEdit ? (
         <div
-            className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-4 rounded-md transition"}`}
+            className={`overflow-hidden break-words ${canEdit && "cursor-pointer hover:bg-gray-50 p-4 rounded-md transition border border-transparent"}`}
             onClick={() => {
                 if (canEdit) {
                     setIsEdit(true);
