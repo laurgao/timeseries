@@ -23,7 +23,7 @@ const AutoresizingTextarea = (props: Props) => {
     }
 
 
-    if (!rows) rows = 7
+    if (!rows) rows = 0
     if (!style) style = { minHeight: rows * 30 }
 
     const paddingClass = "p-4"

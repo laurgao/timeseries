@@ -93,6 +93,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                                     setAddNoteIsOpen(false);
                                 }
                             }}
+                            rows={7}
                         />
                         <p className="text-gray-400 text-xs">Ctrl + Enter to submit</p>
                     </div>
