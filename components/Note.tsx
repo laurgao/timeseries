@@ -12,11 +12,13 @@ const Note = ({
     canModifyExisting,
     setIter,
     includeSubtitle,
+    toggleDisallowNShortcut,
 }: {
     note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>;
     canModifyExisting?: boolean;
     setIter?: Dispatch<SetStateAction<number>>;
     includeSubtitle?: boolean;
+    toggleDisallowNShortcut?: Dispatch<SetStateAction<boolean>>;
 }) => {
     function onDelete(noteId: string) {
         // setIsLoading(true);
@@ -65,7 +67,7 @@ const Note = ({
                     </MenuItem>
                 </ContextMenu>
             )}
-            <NoteBody note={note} setIter={setIter} canEdit={canModifyExisting} />
+            <NoteBody note={note} setIter={setIter} canEdit={canModifyExisting} toggleDisallowNShortcut={toggleDisallowNShortcut} />
         </div>
     );
 };

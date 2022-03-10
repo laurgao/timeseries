@@ -9,7 +9,7 @@ import { color } from "../utils/utils";
 import AutoresizingTextarea from "./headless/AutoresizingTextarea";
 
 
-const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, canEdit?: boolean, setIter?: Dispatch<SetStateAction<number>> }) => {
+const NoteBody = ({ note, setIter, canEdit, toggleDisallowNShortcut }: { note: DatedObj<NoteObj> | DatedObj<NoteObjGraph>, canEdit?: boolean, setIter?: Dispatch<SetStateAction<number>>, toggleDisallowNShortcut?: Dispatch<SetStateAction<boolean>> }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [body, setBody] = useState<string>(note.body);
     // const [date, setDate] = useState<string>(format(new Date(note.date), "yyyy-MM-dd"));
@@ -53,6 +53,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
         }
         saveNote();
         setIsEdit(false);
+        toggleDisallowNShortcut(false);
     }
 
     useInterval(saveNote, state.interval);
@@ -73,6 +74,7 @@ const NoteBody = ({ note, setIter, canEdit }: { note: DatedObj<NoteObj> | DatedO
                 if (canEdit) {
                     setIsEdit(true);
                     waitForEl(`${note._id}-note-body`);
+                    toggleDisallowNShortcut(true);
                 };
             }}
         >

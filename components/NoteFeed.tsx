@@ -15,6 +15,7 @@ import PrimaryButton from "./style/PrimaryButton";
 const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { user: UserObj }>; isOwner: boolean }) => {
     const canCreateNewNote = thisSeries.privacy === "publicCanEdit" || isOwner;
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
+    const [editNoteIsOpen, setEditNoteIsOpen] = useState<boolean>(false);
     const [body, setBody] = useState<string>("");
     const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
     const [iter, setIter] = useState<number>(0);
@@ -31,7 +32,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
     }, [notesData])
 
 
-    function onSubmit() {
+    function handleNewNote() {
         setIsLoading(true);
         axios
             .post("/api/note", { seriesId: thisSeries._id, date: date, body: body })
@@ -47,7 +48,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
     }
 
     useKey("KeyN", (e) => {
-        if (!addNoteIsOpen && canCreateNewNote) {
+        if (!addNoteIsOpen && !editNoteIsOpen && canCreateNewNote) {
             e.preventDefault();
             setAddNoteIsOpen(true);
             waitForEl("new-note-body");
@@ -87,7 +88,7 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                             placeholder="What were the most interesting events in today's news?"
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") {
-                                    if (e.ctrlKey) onSubmit();
+                                    if (e.ctrlKey) handleNewNote();
                                 } else if (e.key === "Escape") {
                                     setAddNoteIsOpen(false);
                                 }
@@ -95,14 +96,14 @@ const NoteFeed = ({ thisSeries, isOwner }: { thisSeries: DatedObj<SeriesObj & { 
                         />
                         <p className="text-gray-400 text-xs">Ctrl + Enter to submit</p>
                     </div>
-                    <PrimaryButton onClick={onSubmit} disabled={!body || !date} isLoading={isLoading}>
+                    <PrimaryButton onClick={handleNewNote} disabled={!body || !date} isLoading={isLoading}>
                         Add note
                     </PrimaryButton>
                 </div>
             )}
             {latestNotes ? (
                 latestNotes.length > 0 ? (
-                    latestNotes.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} />)
+                    latestNotes.map((note) => <Note key={note._id} note={note} canModifyExisting={isOwner} setIter={setIter} toggleDisallowNShortcut={setEditNoteIsOpen} />)
                 ) : (
                     <p>No notes... yet 😏</p>
                 )
