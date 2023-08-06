@@ -19,7 +19,7 @@
         "date-fns": "^2.22.1",
         "linkify-react": "^3.0.4",
         "linkifyjs": "^3.0.5",
-        "mongoose": "^5.12.13",
+        "mongoose": "^5.13.20",
         "next": "^12.1.0",
         "next-auth": "^3.29.10",
         "next-response-helpers": "^0.1.3",
